@@ -74,42 +74,42 @@ const (
 	H1
 )
 
-type MAILBOX [64]uint32
+// type MAILBOX [64]uint32
 
-const (
-	W_KING uint32 = iota
-	W_QUEEN
-	W_BISHOP_1
-	W_BISHOP_2
-	W_KNIGHT_1
-	W_KNIGHT_2
-	W_ROOK_1
-	W_ROOK_2
-	W_PAWN_1
-	W_PAWN_2
-	W_PAWN_3
-	W_PAWN_4
-	W_PAWN_5
-	W_PAWN_6
-	W_PAWN_7
-	W_PAWN_8
-	B_KING
-	B_QUEEN
-	B_BISHOP_1
-	B_BISHOP_2
-	B_KNIGHT_1
-	B_KNIGHT_2
-	B_ROOK_1
-	B_ROOK_2
-	B_PAWN_1
-	B_PAWN_2
-	B_PAWN_3
-	B_PAWN_4
-	B_PAWN_5
-	B_PAWN_6
-	B_PAWN_7
-	B_PAWN_8
-)
+// const (
+// 	W_KING uint32 = iota
+// 	W_QUEEN
+// 	W_BISHOP_1
+// 	W_BISHOP_2
+// 	W_KNIGHT_1
+// 	W_KNIGHT_2
+// 	W_ROOK_1
+// 	W_ROOK_2
+// 	W_PAWN_1
+// 	W_PAWN_2
+// 	W_PAWN_3
+// 	W_PAWN_4
+// 	W_PAWN_5
+// 	W_PAWN_6
+// 	W_PAWN_7
+// 	W_PAWN_8
+// 	B_KING
+// 	B_QUEEN
+// 	B_BISHOP_1
+// 	B_BISHOP_2
+// 	B_KNIGHT_1
+// 	B_KNIGHT_2
+// 	B_ROOK_1
+// 	B_ROOK_2
+// 	B_PAWN_1
+// 	B_PAWN_2
+// 	B_PAWN_3
+// 	B_PAWN_4
+// 	B_PAWN_5
+// 	B_PAWN_6
+// 	B_PAWN_7
+// 	B_PAWN_8
+// )
 
 const (
 	WHITE uint8 = iota
@@ -117,7 +117,7 @@ const (
 )
 
 const (
-	NoCastlingAllowed     = 0
+	//	NoCastlingAllowed     = 0
 	WhiteKingSideAllowed  = 1
 	WhiteQueenSideAllowed = 2
 	BlackKingSideAllowed  = 4

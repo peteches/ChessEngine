@@ -2,38 +2,101 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
-func uciInit(w io.Writer) {
-	fmt.Fprintln(w, "id name PetechesChessBot 0.0")
-	fmt.Fprintln(w, "id author Pete 'Peteches' McCabe")
-	fmt.Fprintln(w, "uciok")
+// var STARTINGFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+func handleUci(ctx context.Context) <-chan string {
+	outChan := make(chan string, 3)
+	defer close(outChan)
+	outChan <- fmt.Sprintln("id name PetechesChessBot 0.0")
+	outChan <- fmt.Sprintln("id author Pete 'Peteches' McCabe")
+	outChan <- fmt.Sprintln("uciok")
+	return outChan
 }
 
-func process_input(w io.Writer, cmd string) {
-	switch cmd {
-	case "uci":
-		{
-			uciInit(w)
+func handlePosition(ctx context.Context, args []string) {
+}
+
+func process_input(ctx context.Context, cmdChan <-chan string) <-chan string {
+	outChan := make(chan string)
+	go func() {
+		defer close(outChan)
+		for {
+			select {
+			case <-ctx.Done():
+				{
+					return
+				}
+			case cmd := <-cmdChan:
+				{
+					words := strings.Split(cmd, " ")
+					switch words[0] {
+					case "uci":
+						{
+							go func() {
+								o := handleUci(ctx)
+								for x := range o {
+									outChan <- x
+								}
+							}()
+						}
+					case "position":
+						{
+							go handlePosition(ctx, words[1:])
+						}
+					default:
+						{
+							outChan <- fmt.Sprintf("Recieved unknown CMD: %s\n", cmd)
+						}
+					}
+				}
+			}
 		}
-	default:
-		{
-			fmt.Fprintf(w, "Recieved unknown CMD: %s\n", cmd)
+	}()
+	return outChan
+}
+
+func scanForCommands(ctx context.Context, r io.Reader) <-chan string {
+	scanner := bufio.NewScanner(r)
+	cmdChan := make(chan string)
+	go func() {
+		defer close(cmdChan)
+		for scanner.Scan() {
+			select {
+			case <-ctx.Done():
+				{
+					goto end
+				}
+			default:
+				{
+					cmd := scanner.Text()
+					switch cmd {
+					case "quit":
+						goto end
+					default:
+						cmdChan <- cmd
+					}
+				}
+			}
+			if err := scanner.Err(); err != nil {
+				fmt.Fprintln(os.Stderr, "Error reading Stdin: ", err)
+			}
 		}
-	}
+	end:
+	}()
+	return cmdChan
 }
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
 
-	for scanner.Scan() {
-		cmd := scanner.Text()
-		process_input(os.Stdout, cmd)
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error reading Stdin: ", err)
-	}
+	ctx := context.TODO()
+	cmdChan := scanForCommands(ctx, os.Stdin)
+	go process_input(ctx, cmdChan)
+
 }
