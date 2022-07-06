@@ -10,13 +10,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var UCIOK = `id name PetechesChessBot 0.0
+// nolint:gochecknoglobals // for testing this is fine
+var uciOkMsg = `id name PetechesChessBot 0.0
 id author Pete 'Peteches' McCabe
 uciok
 `
 
 func TestUciInit(t *testing.T) {
 	ctx := context.Background()
+
 	Convey("Given a handleUci function", t, func() {
 		Convey("It should accept a context", func() {
 			So(func() {
@@ -33,24 +35,26 @@ func TestUciInit(t *testing.T) {
 			for x := range outChan {
 				out += x
 			}
-			So(out, ShouldEqual, UCIOK)
+			So(out, ShouldEqual, uciOkMsg)
 		})
 	})
 }
 
+//nolint:funlen // Convey testing is verbose
 func TestProcessInput(t *testing.T) {
 	ctx := context.Background()
+
 	Convey("Given a process_input function", t, func() {
 		Convey("It should accept a context and a  reader string channel", func() {
 			Convey("And quit when the context is cancelled.", func() {
 				cmdChn := make(chan string)
 				ctx, ctxCancel := context.WithCancel(ctx)
-				So(func() { process_input(ctx, cmdChn); time.Sleep(1 * time.Second); ctxCancel() }, ShouldNotPanic)
+				So(func() { processInput(ctx, cmdChn); time.Sleep(1 * time.Second); ctxCancel() }, ShouldNotPanic)
 			})
 			Convey("And return a readonly channel", func() {
 				cmdChn := make(chan string)
 				ctx, ctxCancel := context.WithCancel(ctx)
-				outChan := process_input(ctx, cmdChn)
+				outChan := processInput(ctx, cmdChn)
 				ctxCancel()
 
 				So(outChan, ShouldHaveSameTypeAs, make(<-chan string))
@@ -62,7 +66,7 @@ func TestProcessInput(t *testing.T) {
 				Convey("It should output identifying information to the returned channel", func() {
 					cmdChn := make(chan string)
 					ctx, ctxCancel := context.WithCancel(ctx)
-					outChan := process_input(ctx, cmdChn)
+					outChan := processInput(ctx, cmdChn)
 					cmdChn <- "uci"
 					out := ""
 					x := ""
@@ -71,7 +75,7 @@ func TestProcessInput(t *testing.T) {
 						out += x
 					}
 					ctxCancel()
-					So(out, ShouldEqual, UCIOK)
+					So(out, ShouldEqual, uciOkMsg)
 				})
 			})
 		})
@@ -81,7 +85,7 @@ func TestProcessInput(t *testing.T) {
 					cmdChn := make(chan string)
 					var out bytes.Buffer
 					ctx, ctxCancel := context.WithCancel(ctx)
-					process_input(ctx, cmdChn)
+					processInput(ctx, cmdChn)
 					cmdChn <- "position startpos"
 					ctxCancel()
 					So(out.String(), ShouldEqual, "Initialising Position")
@@ -92,16 +96,16 @@ func TestProcessInput(t *testing.T) {
 			Convey("It should output notice", func() {
 				cmdChn := make(chan string)
 				ctx, ctxCancel := context.WithCancel(ctx)
-				outChan := process_input(ctx, cmdChn)
+				outChan := processInput(ctx, cmdChn)
 				cmdChn <- "Geoff"
 				out := ""
 				x := ""
-				for x != "Recieved unknown CMD: Geoff\n" {
+				for x != "Received unknown CMD: Geoff\n" {
 					x = <-outChan
 					out += x
 				}
 				ctxCancel()
-				So(out, ShouldEqual, "Recieved unknown CMD: Geoff\n")
+				So(out, ShouldEqual, "Received unknown CMD: Geoff\n")
 			})
 		})
 	})
@@ -109,6 +113,7 @@ func TestProcessInput(t *testing.T) {
 
 func TestScanForCommands(t *testing.T) {
 	ctx := context.Background()
+
 	Convey("Given a scanForCommands function", t, func() {
 		Convey("It should accept a context an io.Reader and return a readonly string channel", func() {
 			ctx, ctxCancel := context.WithCancel(ctx)

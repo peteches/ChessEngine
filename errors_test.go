@@ -7,13 +7,16 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+// nolint:funlen // convey testing is verbose
 func TestErrors(t *testing.T) {
 	Convey("Given a piecePositionError", t, func() {
-		ppe := &piecePositionError{
+		ppe := &PiecePositionError{
 			fen:      "fen",
 			errPiece: 'k',
 		}
-		errMsg := fmt.Sprintf("Invalid piece found (%c) in fen (%s). Should be one of [rnbqkpRNBQKP/12345678]", ppe.errPiece, ppe.fen)
+		errMsg := fmt.Sprintf("Invalid piece found (%c) in fen (%s). "+
+			"Should be one of [rnbqkpRNBQKP/12345678]",
+			ppe.errPiece, ppe.fen)
 		Convey("It should implement the error interface", func() {
 			So(ppe, ShouldImplement, (*error)(nil))
 			So(ppe.Error(), ShouldEqual, errMsg)
@@ -26,79 +29,103 @@ func TestErrors(t *testing.T) {
 		})
 	})
 	Convey("Given a sideToMoveError", t, func() {
-		e := &sideToMoveError{
+		err := &SideToMoveError{
 			fen:     "fen",
 			errSide: "w",
 		}
-		errMsg := fmt.Sprintf("Invalid side to move found (%s) in fen (%s). Should be one of [bw]", e.errSide, e.fen)
+		errMsg := fmt.Sprintf("Invalid side to move found (%s) in fen (%s). Should be one of [bw]", err.errSide, err.fen)
 		Convey("It should implement the error interface", func() {
-			So(e, ShouldImplement, (*error)(nil))
-			So(e.Error(), ShouldEqual, errMsg)
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
 		})
 		Convey("It should have a fen attribute", func() {
-			So(e.fen, ShouldHaveSameTypeAs, "")
+			So(err.fen, ShouldHaveSameTypeAs, "")
 		})
 		Convey("It should have an errSide attribute", func() {
-			So(e.errSide, ShouldHaveSameTypeAs, "h")
+			So(err.errSide, ShouldHaveSameTypeAs, "h")
+		})
+	})
+	Convey("Given a CastlingRightsError", t, func() {
+		err := &CastlingRightsError{
+			fen:     "fen",
+			errChar: 'z',
+		}
+		errMsg := fmt.Sprintf("Invalid castling rights found (%c) in fen (%s). "+
+			"Should only contain characters 'kqKQ-'", err.errChar, err.fen)
+		Convey("It should implement the error interface", func() {
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
+		})
+		Convey("It should have a fen attribute", func() {
+			So(err.fen, ShouldHaveSameTypeAs, "")
+		})
+		Convey("It should have an errSide attribute", func() {
+			So(err.errChar, ShouldHaveSameTypeAs, 'z')
 		})
 	})
 	Convey("Given a enPassantTargetError", t, func() {
-		e := &enPassantTargetError{
+		err := &EnPassantTargetError{
 			fen:       "fen",
 			errTarget: "w",
 		}
-		errMsg := fmt.Sprintf("Invalid en passant target square (%s) in fen (%s). Should be one of [A3,B3,C3,D3,E3,F3,G3,H3,A6,B6,C6,D6,E6,F6,G6,H6]", e.errTarget, e.fen)
+		errMsg := fmt.Sprintf("Invalid en passant target square (%s) in fen (%s). "+
+			"Should be one of [A3,B3,C3,D3,E3,F3,G3,H3,A6,B6,C6,D6,E6,F6,G6,H6]", err.errTarget, err.fen)
 		Convey("It should implement the error interface", func() {
-			So(e, ShouldImplement, (*error)(nil))
-			So(e.Error(), ShouldEqual, errMsg)
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
 		})
 		Convey("It should have a fen attribute", func() {
-			So(e.fen, ShouldHaveSameTypeAs, "")
+			So(err.fen, ShouldHaveSameTypeAs, "")
 		})
 		Convey("It should have an errTarget attribute", func() {
-			So(e.errTarget, ShouldHaveSameTypeAs, "h")
+			So(err.errTarget, ShouldHaveSameTypeAs, "h")
 		})
 	})
 	Convey("Given a halfMoveClockError", t, func() {
-		e := &halfMoveClockError{
+		err := &HalfMoveClockError{
 			fen:           "fen",
 			err:           "w",
 			halfMoveClock: "1",
 		}
-		errMsg := fmt.Sprintf("Invalid half move clock (%s) in fen (%s). Must be a positive number. Recieved error while parsing Atoi: %s", e.halfMoveClock, e.fen, e.err)
+		errMsg := fmt.Sprintf("Invalid half move clock (%s) in fen (%s). "+
+			"Must be a positive number. Received error while parsing Atoi: %s",
+			err.halfMoveClock, err.fen, err.err)
 		Convey("It should implement the error interface", func() {
-			So(e, ShouldImplement, (*error)(nil))
-			So(e.Error(), ShouldEqual, errMsg)
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
 		})
 		Convey("It should have a fen attribute", func() {
-			So(e.fen, ShouldHaveSameTypeAs, "")
+			So(err.fen, ShouldHaveSameTypeAs, "")
 		})
 		Convey("It should have an err attribute", func() {
-			So(e.err, ShouldHaveSameTypeAs, "h")
+			So(err.err, ShouldHaveSameTypeAs, "h")
 		})
 		Convey("It should have a halfMoveClock attribute", func() {
-			So(e.halfMoveClock, ShouldHaveSameTypeAs, "h")
+			So(err.halfMoveClock, ShouldHaveSameTypeAs, "h")
 		})
 	})
 	Convey("Given a fullMoveCounterError", t, func() {
-		e := &fullMoveCounterError{
+		err := &FullMoveCounterError{
 			fen:             "fen",
 			err:             "w",
 			fullMoveCounter: "1",
 		}
-		errMsg := fmt.Sprintf("Invalid full move counter (%s) in fen (%s). Must be a positive number. Recieved error while parsing Atoi: %s", e.fullMoveCounter, e.fen, e.err)
+		errMsg := fmt.Sprintf("Invalid full move counter (%s) in fen (%s). "+
+			"Must be a positive number. "+
+			"Received error while parsing Atoi: %s",
+			err.fullMoveCounter, err.fen, err.err)
 		Convey("It should implement the error interface", func() {
-			So(e, ShouldImplement, (*error)(nil))
-			So(e.Error(), ShouldEqual, errMsg)
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
 		})
 		Convey("It should have a fen attribute", func() {
-			So(e.fen, ShouldHaveSameTypeAs, "")
+			So(err.fen, ShouldHaveSameTypeAs, "")
 		})
 		Convey("It should have an err attribute", func() {
-			So(e.err, ShouldHaveSameTypeAs, "h")
+			So(err.err, ShouldHaveSameTypeAs, "h")
 		})
 		Convey("It should have a fullMoveCounter attribute", func() {
-			So(e.fullMoveCounter, ShouldHaveSameTypeAs, "h")
+			So(err.fullMoveCounter, ShouldHaveSameTypeAs, "h")
 		})
 	})
 }

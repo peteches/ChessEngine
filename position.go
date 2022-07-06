@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+//nolint:varnamelen // these are board coordinates. longer names do not make sense
 const (
 	A8 uint64 = iota + 1
 	B8
@@ -129,25 +130,27 @@ type BITBOARD struct {
 }
 
 func NewBitboard(initPositions ...uint64) *BITBOARD {
-	bb := BITBOARD{
+	bitBoard := BITBOARD{
 		board: 0,
 	}
 	for _, x := range initPositions {
-		bb.FlipBit(x)
+		bitBoard.FlipBit(x)
 	}
-	return &bb
+
+	return &bitBoard
 }
 
-func (bb *BITBOARD) FlipBit(p uint64) {
-	log.Debug().Uint64("bit", p).Msg("Flipping Bit")
-	switch p {
+func (bb *BITBOARD) FlipBit(bit uint64) {
+	log.Debug().Uint64("bit", bit).Msg("Flipping Bit")
+
+	switch bit {
 	case 0:
 		{
 		}
 	case 1:
 		{
 			oboard := bb.board
-			nboard := bb.board ^ p
+			nboard := bb.board ^ bit
 			bb.board = nboard
 			log.Debug().Interface("OldBoard", oboard).
 				Interface("NewBoard", nboard).
@@ -156,24 +159,24 @@ func (bb *BITBOARD) FlipBit(p uint64) {
 		}
 	default:
 		{
-			bb.board ^= (1 << p)
+			bb.board ^= (1 << bit)
 		}
 	}
 }
 
 type PiecePositions struct {
-	W_KING   *BITBOARD
-	W_QUEEN  *BITBOARD
-	W_BISHOP *BITBOARD
-	W_KNIGHT *BITBOARD
-	W_ROOK   *BITBOARD
-	W_PAWN   *BITBOARD
-	B_KING   *BITBOARD
-	B_QUEEN  *BITBOARD
-	B_BISHOP *BITBOARD
-	B_KNIGHT *BITBOARD
-	B_ROOK   *BITBOARD
-	B_PAWN   *BITBOARD
+	WhiteKing   *BITBOARD
+	WhiteQueen  *BITBOARD
+	WhiteBishop *BITBOARD
+	WhiteKnight *BITBOARD
+	WhiteRook   *BITBOARD
+	WhitePawn   *BITBOARD
+	BlackKing   *BITBOARD
+	BlackQueen  *BITBOARD
+	BlackBishop *BITBOARD
+	BlackKnight *BITBOARD
+	BlackRook   *BITBOARD
+	BlackPawn   *BITBOARD
 }
 
 func NewPiecePositions() *PiecePositions {
@@ -195,101 +198,91 @@ func NewPiecePositions() *PiecePositions {
 
 type Position struct {
 	Pieces          *PiecePositions
-	SideToMove      uint8
-	CastlingAbility uint8
 	EnPassantTarget uint64
+	SideToMove      uint8
+	CastlingRights  uint8
 	HalfmoveClock   uint8
 	FullMoveCounter uint8
 }
 
-func (p *Position) SetPositionFromFen(fen string) error {
-	llogger := log.With().Str("fen", fen).Logger()
-	llogger.Info().Msg("Setting position to new fen")
-
-	fenElements := strings.Split(fen, " ")
-
+// nolint:funlen // this case statement pushes over the limit but is largely
+// unavoidable.
+// complexity in this function is as simple as can be made.
+func (p *Position) SetPieces(pieces string) *PiecePositionError { // nolint:cyclop
 	// Setting Pieces to required Positions
 	newPosition := NewPiecePositions()
 	offset := 1
-	for index, pos := range strings.ReplaceAll(fenElements[0], "/", "") {
-		pllogger := llogger.With().
-			Str("fenElement", strconv.QuoteRune(pos)).
-			Int("index", index).
-			Int("offset", offset).
-			Logger()
-		pllogger.Debug().Msg("")
+
+	for index, pos := range strings.ReplaceAll(pieces, "/", "") {
 		switch pos {
 		case 'r':
 			{
-				newPosition.B_ROOK.FlipBit(uint64(index + offset))
+				newPosition.BlackRook.FlipBit(uint64(index + offset))
 			}
 		case 'n':
 			{
-				newPosition.B_KNIGHT.FlipBit(uint64(index + offset))
+				newPosition.BlackKnight.FlipBit(uint64(index + offset))
 			}
 		case 'b':
 			{
-				newPosition.B_BISHOP.FlipBit(uint64(index + offset))
+				newPosition.BlackBishop.FlipBit(uint64(index + offset))
 			}
 		case 'q':
 			{
-				newPosition.B_QUEEN.FlipBit(uint64(index + offset))
+				newPosition.BlackQueen.FlipBit(uint64(index + offset))
 			}
 		case 'k':
 			{
-				newPosition.B_KING.FlipBit(uint64(index + offset))
+				newPosition.BlackKing.FlipBit(uint64(index + offset))
 			}
 		case 'p':
 			{
-				newPosition.B_PAWN.FlipBit(uint64(index + offset))
+				newPosition.BlackPawn.FlipBit(uint64(index + offset))
 			}
 		case 'R':
 			{
-				newPosition.W_ROOK.FlipBit(uint64(index + offset))
+				newPosition.WhiteRook.FlipBit(uint64(index + offset))
 			}
 		case 'N':
 			{
-				newPosition.W_KNIGHT.FlipBit(uint64(index + offset))
+				newPosition.WhiteKnight.FlipBit(uint64(index + offset))
 			}
 		case 'B':
 			{
-				newPosition.W_BISHOP.FlipBit(uint64(index + offset))
+				newPosition.WhiteBishop.FlipBit(uint64(index + offset))
 			}
 		case 'Q':
 			{
-				newPosition.W_QUEEN.FlipBit(uint64(index + offset))
+				newPosition.WhiteQueen.FlipBit(uint64(index + offset))
 			}
 		case 'K':
 			{
-				newPosition.W_KING.FlipBit(uint64(index + offset))
+				newPosition.WhiteKing.FlipBit(uint64(index + offset))
 			}
 		case 'P':
 			{
-				newPosition.W_PAWN.FlipBit(uint64(index + offset))
+				newPosition.WhitePawn.FlipBit(uint64(index + offset))
 			}
 		case '1', '2', '3', '4', '5', '6', '7', '8':
 			{
-				pllogger.Debug().
-					Msg("Updating offset by fenElement -1")
 				offset += (int(pos-'0') - 1)
-				pllogger.Debug().
-					Msg("Updated index by fenElement -1")
 			}
 		default:
 			{
-				return &piecePositionError{
-					fen:      fen,
+				return &PiecePositionError{
 					errPiece: pos,
 				}
 			}
 		}
 	}
-	llogger.Debug().Interface("NewPosition", newPosition).Msg("Updating Position")
+
 	p.Pieces = newPosition
 
-	// Setting which side is to move
-	llogger.Debug().Str("SideToMove", fenElements[1]).Msg("Setting Side to Move")
-	switch fenElements[1] {
+	return nil
+}
+
+func (p *Position) SetSideToMove(side string) *SideToMoveError {
+	switch side {
 	case "w":
 		{
 			p.SideToMove = WHITE
@@ -300,98 +293,147 @@ func (p *Position) SetPositionFromFen(fen string) error {
 		}
 	default:
 		{
-			return &sideToMoveError{fen: fen, errSide: fenElements[1]}
+			return &SideToMoveError{errSide: side}
 		}
 	}
 
-	llogger.Debug().Str("CastlingRights", fenElements[2]).Msg("Setting Castling Rights")
-	// Setting Castling Rights
-	for _, pos := range fenElements[2] {
-		pllogger := llogger.With().
-			Uint8("CurrentCastlingAbility", p.CastlingAbility).
-			Str("fenElement", strconv.QuoteRune(pos)).
-			Logger()
-		pllogger.Debug().Msg("")
+	return nil
+}
+
+func (p *Position) SetCastlingRights(rights string) *CastlingRightsError {
+	var blackKingSide uint8
+
+	var blackQueenSide uint8
+
+	var whiteKingSide uint8
+
+	var whiteQueenSide uint8
+
+	for _, pos := range rights {
 		switch pos {
 		case 'k':
 			{
-				p.CastlingAbility ^= BlackKingSideAllowed
+				blackKingSide = BlackKingSideAllowed
 			}
 		case 'q':
 			{
-				p.CastlingAbility ^= BlackQueenSideAllowed
+				blackQueenSide = BlackQueenSideAllowed
 			}
 		case 'K':
 			{
-				p.CastlingAbility ^= WhiteKingSideAllowed
+				whiteKingSide = WhiteKingSideAllowed
 			}
 		case 'Q':
 			{
-				p.CastlingAbility ^= WhiteQueenSideAllowed
+				whiteQueenSide = WhiteQueenSideAllowed
+			}
+		case '-':
+			{
+				p.CastlingRights = 0
+
+				return nil
+			}
+		default:
+			{
+				return &CastlingRightsError{errChar: pos}
 			}
 		}
 	}
 
-	// Setting EnPassantTarget square
-	switch fenElements[3] {
-	case "A3":
-		p.EnPassantTarget = A3
-	case "B3":
-		p.EnPassantTarget = B3
-	case "C3":
-		p.EnPassantTarget = C3
-	case "D3":
-		p.EnPassantTarget = D3
-	case "E3":
-		p.EnPassantTarget = E3
-	case "F3":
-		p.EnPassantTarget = F3
-	case "G3":
-		p.EnPassantTarget = G3
-	case "H3":
-		p.EnPassantTarget = H3
-	case "A6":
-		p.EnPassantTarget = A6
-	case "B6":
-		p.EnPassantTarget = B6
-	case "C6":
-		p.EnPassantTarget = C6
-	case "D6":
-		p.EnPassantTarget = D6
-	case "E6":
-		p.EnPassantTarget = E6
-	case "F6":
-		p.EnPassantTarget = F6
-	case "G6":
-		p.EnPassantTarget = G6
-	case "H6":
-		p.EnPassantTarget = H6
-	case "-":
-		p.EnPassantTarget = 0
-	default:
-		return &enPassantTargetError{fen: fen, errTarget: fenElements[3]}
+	p.CastlingRights = 0 ^ (blackKingSide | blackQueenSide | whiteKingSide | whiteQueenSide)
+
+	return nil
+}
+
+func (p *Position) setEnPassantTarget(targetSquare string) *EnPassantTargetError {
+	enPassantMatrix := map[string]uint64{
+		"-":  0,
+		"A3": A3,
+		"B3": B3,
+		"C3": C3,
+		"D3": D3,
+		"E3": E3,
+		"F3": F3,
+		"G3": G3,
+		"H3": H3,
+		"A6": A6,
+		"B6": B6,
+		"C6": C6,
+		"D6": D6,
+		"E6": E6,
+		"F6": F6,
+		"G6": G6,
+		"H6": H6,
 	}
 
-	// Set HalfmoveClock
-	i, err := strconv.ParseUint(fenElements[4], 10, 8)
+	var ok bool
+	p.EnPassantTarget, ok = enPassantMatrix[targetSquare]
+
+	if ok {
+		return nil
+	}
+
+	return &EnPassantTargetError{errTarget: targetSquare}
+}
+
+func (p *Position) SetPositionFromFen(fen string) error {
+	fenElements := strings.Split(fen, " ")
+
+	pieceErr := p.SetPieces(fenElements[0])
+	if pieceErr != nil {
+		pieceErr.fen = fen
+
+		return pieceErr
+	}
+
+	stmErr := p.SetSideToMove(fenElements[1])
+	if stmErr != nil {
+		stmErr.fen = fen
+
+		return stmErr
+	}
+
+	castlingErr := p.SetCastlingRights(fenElements[2])
+	if castlingErr != nil {
+		castlingErr.fen = fen
+
+		return castlingErr
+	}
+
+	// Setting EnPassantTarget square
+	enPassantErr := p.setEnPassantTarget(fenElements[3])
+	if enPassantErr != nil {
+		enPassantErr.fen = fen
+
+		return enPassantErr
+	}
+
+	// nolint:gomnd // parse uint wants base and bits which arn't easily
+	// derived
+	halfMoveClock, err := strconv.ParseUint(fenElements[4], 10, 8)
 	if err != nil {
-		return &halfMoveClockError{
+		return &HalfMoveClockError{
 			fen:           fen,
 			err:           err.Error(),
 			halfMoveClock: fenElements[4],
 		}
 	}
-	p.HalfmoveClock = uint8(i)
-	// Set FullMoveCounter
-	i, err = strconv.ParseUint(fenElements[5], 10, 8)
+
+	p.HalfmoveClock = uint8(halfMoveClock)
+
+	// nolint:gomnd // parse uint wants base and bits which arn't easily
+	// derived
+	halfMoveClock, err = strconv.ParseUint(fenElements[5], 10, 8)
 	if err != nil {
-		return &fullMoveCounterError{
+		return &FullMoveCounterError{
 			fen:             fen,
 			err:             err.Error(),
 			fullMoveCounter: fenElements[5],
 		}
 	}
-	p.FullMoveCounter = uint8(i)
+
+	p.FullMoveCounter = uint8(halfMoveClock)
+
 	return nil
 }
 
@@ -399,10 +441,11 @@ func NewPosition() *Position {
 	pos := Position{
 		Pieces:          NewPiecePositions(),
 		SideToMove:      WHITE,
-		CastlingAbility: 0,
+		CastlingRights:  0,
 		EnPassantTarget: 0,
 		HalfmoveClock:   0,
 		FullMoveCounter: 1,
 	}
+
 	return &pos
 }
