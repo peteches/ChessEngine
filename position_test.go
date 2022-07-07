@@ -681,3 +681,17 @@ func TestPosition(t *testing.T) {
 		})
 	})
 }
+
+func FuzzSetPositionFromFen(f *testing.F) {
+	for fen := range validFenstrings {
+		f.Add(fen)
+	}
+
+	f.Fuzz(func(t *testing.T, fen string) {
+		pos := NewPosition()
+		err := pos.SetPositionFromFen(fen)
+		if err != nil {
+			t.Fail()
+		}
+	})
+}
