@@ -608,14 +608,14 @@ func TestPosition(t *testing.T) {
 				FullMoveCounter: 1,
 			})
 		})
-		Convey("The SetPieces method should update position.Pieces feild", func() {
+		Convey("The setPieces method should update position.Pieces feild", func() {
 			for pieces, expectedPiecePosition := range validPiecePositions {
-				err := pos.SetPieces(pieces)
+				err := pos.setPieces(pieces)
 				So(*pos.Pieces, ShouldResemble, expectedPiecePosition)
 				So(err, ShouldEqual, nil)
 			}
 		})
-		Convey("The SetCastlingRights method should update position.CastlingRights field", func() {
+		Convey("The setCastlingRights method should update position.CastlingRights field", func() {
 			CastlingRights := map[string]uint8{
 				"kqKQ": 0 ^ (BlackKingSideAllowed | BlackQueenSideAllowed | WhiteKingSideAllowed | WhiteQueenSideAllowed),
 				"kqK":  0 ^ (BlackKingSideAllowed | BlackQueenSideAllowed | WhiteKingSideAllowed),
@@ -625,7 +625,7 @@ func TestPosition(t *testing.T) {
 				"K":    0 ^ WhiteKingSideAllowed,
 			}
 			for k, v := range CastlingRights {
-				err := pos.SetCastlingRights(k)
+				err := pos.setCastlingRights(k)
 				So(err, ShouldEqual, nil)
 				So(pos.CastlingRights, ShouldEqual, v)
 			}
@@ -658,11 +658,11 @@ func TestPosition(t *testing.T) {
 			enpassantErr := pos.setEnPassantTarget("H8")
 			So(enpassantErr, ShouldResemble, &EnPassantTargetError{errTarget: "H8"})
 		})
-		Convey("The SetSideToMove method should update the side to move field", func() {
-			err := pos.SetSideToMove("w")
+		Convey("The setSideToMove method should update the side to move field", func() {
+			err := pos.setSideToMove("w")
 			So(err, ShouldEqual, nil)
 			So(pos.SideToMove, ShouldEqual, WHITE)
-			err = pos.SetSideToMove("b")
+			err = pos.setSideToMove("b")
 			So(err, ShouldEqual, nil)
 			So(pos.SideToMove, ShouldEqual, BLACK)
 		})

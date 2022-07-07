@@ -208,7 +208,7 @@ type Position struct {
 // nolint:funlen // this case statement pushes over the limit but is largely
 // unavoidable.
 // complexity in this function is as simple as can be made.
-func (p *Position) SetPieces(pieces string) *PiecePositionError { // nolint:cyclop
+func (p *Position) setPieces(pieces string) *PiecePositionError { // nolint:cyclop
 	// Setting Pieces to required Positions
 	newPosition := NewPiecePositions()
 	offset := 1
@@ -281,7 +281,7 @@ func (p *Position) SetPieces(pieces string) *PiecePositionError { // nolint:cycl
 	return nil
 }
 
-func (p *Position) SetSideToMove(side string) *SideToMoveError {
+func (p *Position) setSideToMove(side string) *SideToMoveError {
 	switch side {
 	case "w":
 		{
@@ -300,7 +300,7 @@ func (p *Position) SetSideToMove(side string) *SideToMoveError {
 	return nil
 }
 
-func (p *Position) SetCastlingRights(rights string) *CastlingRightsError {
+func (p *Position) setCastlingRights(rights string) *CastlingRightsError {
 	var blackKingSide uint8
 
 	var blackQueenSide uint8
@@ -379,21 +379,21 @@ func (p *Position) setEnPassantTarget(targetSquare string) *EnPassantTargetError
 func (p *Position) SetPositionFromFen(fen string) error {
 	fenElements := strings.Split(fen, " ")
 
-	pieceErr := p.SetPieces(fenElements[0])
+	pieceErr := p.setPieces(fenElements[0])
 	if pieceErr != nil {
 		pieceErr.fen = fen
 
 		return pieceErr
 	}
 
-	stmErr := p.SetSideToMove(fenElements[1])
+	stmErr := p.setSideToMove(fenElements[1])
 	if stmErr != nil {
 		stmErr.fen = fen
 
 		return stmErr
 	}
 
-	castlingErr := p.SetCastlingRights(fenElements[2])
+	castlingErr := p.setCastlingRights(fenElements[2])
 	if castlingErr != nil {
 		castlingErr.fen = fen
 
