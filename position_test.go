@@ -553,8 +553,9 @@ func TestConstants(t *testing.T) {
 	})
 }
 
+// nolint:funlen // convey testing is verbose
 func TestBitboard(t *testing.T) {
-	Convey("Given a NewBitboard function", t, func() {
+	SkipConvey("Given a NewBitboard function", t, func() {
 		Convey("With no arguments", func() {
 			Convey("It should return an empty board", func() {
 				bb := NewBitboard()
@@ -578,17 +579,120 @@ func TestBitboard(t *testing.T) {
 	})
 	Convey("Given an existing BitBoard", t, func() {
 		bitboard := NewBitboard()
+		Convey("Bit manipulation basics", func() {
+			So(0^(1<<0), ShouldEqual, 1)
+		})
 		Convey("When FlipBit method called", func() {
 			Convey("It should update its board attribute", func() {
-				bitboard.FlipBit(4)
-				So(bitboard.board, ShouldEqual, 16)
-				bitboard.FlipBit(2)
-				So(bitboard.board, ShouldEqual, 20)
-				bitboard.FlipBit(2)
-				So(bitboard.board, ShouldEqual, 16)
-				bitboard.FlipBit(0)
-				So(bitboard.board, ShouldEqual, 16)
+				So(bitboard.board, ShouldEqual, 0)
+				for k := uint64(1); k <= 64; k++ {
+					bb := NewBitboard()
+					So(bb.board, ShouldEqual, 0)
+					bb.FlipBit(k)
+					So(bb.board, ShouldEqual, uint64(1<<(k-1)))
+				}
 			})
+		})
+		SkipConvey("When Squares() method called returns list strings where bits are 1", func() {
+			So(bitboard.Squares(), ShouldResemble, []string{})
+			bitboard.FlipBit(1)
+			So(bitboard.Squares(), ShouldHaveLength, 1)
+			So(bitboard.Squares(), ShouldContain, "A8")
+			bitboard.FlipBit(H3)
+			bitboard.FlipBit(H4)
+			So(bitboard.Squares(), ShouldHaveLength, 3)
+			So(bitboard.Squares(), ShouldContain, "A8")
+			So(bitboard.Squares(), ShouldContain, "H3")
+			So(bitboard.Squares(), ShouldContain, "H4")
+		})
+
+		SkipConvey("When Occupied() method called with square, returns true if square occupied", func() {
+			for sqr := uint8(8); sqr <= 64; sqr++ {
+				So(bitboard.Occupied(sqr), ShouldEqual, false)
+			}
+			bitboard.FlipBit(3)
+			So(bitboard.Occupied(3), ShouldEqual, true)
+			bitboard.FlipBit(1)
+			So(bitboard.Occupied(3), ShouldEqual, true)
+			So(bitboard.Occupied(1), ShouldEqual, true)
+			So(bitboard.Occupied(64), ShouldEqual, false)
+			bitboard.FlipBit(64)
+			So(bitboard.Occupied(64), ShouldEqual, true)
+		})
+	})
+}
+
+// nolint:funlen // convey testing is verbose
+func TestPiecePositions(t *testing.T) {
+	SkipConvey("Given a PiecePositions struct", t, func() {
+		pieces := NewPiecePositions()
+		Convey("It should have BITBOARD fields for all types of piece", func() {
+			So(pieces.WhiteKing, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.WhiteQueen, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.WhiteKnight, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.WhiteBishop, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.WhiteRook, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.WhitePawn, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.BlackKing, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.BlackQueen, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.BlackKnight, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.BlackBishop, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.BlackRook, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.BlackPawn, ShouldHaveSameTypeAs, &BITBOARD{})
+		})
+		Convey("the Occupied() method should return true if any piece is in square", func() {
+			for sqr := uint8(8); sqr <= 64; sqr++ {
+				So(pieces.Occupied(sqr), ShouldEqual, false)
+			}
+			pieces.BlackBishop.FlipBit(1)
+			So(pieces.Occupied(1), ShouldEqual, true)
+			pieces.WhiteQueen.FlipBit(32)
+			So(pieces.Occupied(32), ShouldEqual, true)
+		})
+		Convey("the OccupiedBy() method should return which Piece is occupying the square", func() {
+			pieces.BlackBishop.FlipBit(4)
+			So(pieces.OccupiedBy(4), ShouldEqual, "b")
+			pieces.WhiteQueen.FlipBit(32)
+			So(pieces.OccupiedBy(32), ShouldEqual, "Q")
+			pieces.WhiteRook.FlipBit(64)
+			So(pieces.OccupiedBy(64), ShouldEqual, "R")
+		})
+		Convey("the String() method returns the string representation of the pieces ala fen notation", func() {
+			pieces := NewPiecePositions()
+			So(pieces.String(), ShouldEqual, "8/8/8/8/8/8/8/8")
+			pieces.BlackRook.FlipBit(A8)
+			pieces.BlackKnight.FlipBit(B8)
+			pieces.BlackBishop.FlipBit(C8)
+			pieces.BlackQueen.FlipBit(D8)
+			pieces.BlackKing.FlipBit(E8)
+			pieces.BlackBishop.FlipBit(F8)
+			pieces.BlackKnight.FlipBit(G8)
+			pieces.BlackRook.FlipBit(H8)
+			pieces.BlackPawn.FlipBit(A7)
+			pieces.BlackPawn.FlipBit(B7)
+			pieces.BlackPawn.FlipBit(C7)
+			pieces.BlackPawn.FlipBit(D7)
+			pieces.BlackPawn.FlipBit(E7)
+			pieces.BlackPawn.FlipBit(F7)
+			pieces.BlackPawn.FlipBit(G7)
+			pieces.BlackPawn.FlipBit(H7)
+			pieces.WhitePawn.FlipBit(A2)
+			pieces.WhitePawn.FlipBit(B2)
+			pieces.WhitePawn.FlipBit(C2)
+			pieces.WhitePawn.FlipBit(D2)
+			pieces.WhitePawn.FlipBit(E2)
+			pieces.WhitePawn.FlipBit(F2)
+			pieces.WhitePawn.FlipBit(G2)
+			pieces.WhitePawn.FlipBit(H2)
+			pieces.WhiteRook.FlipBit(A1)
+			pieces.WhiteKnight.FlipBit(B1)
+			pieces.WhiteBishop.FlipBit(C1)
+			pieces.WhiteQueen.FlipBit(D1)
+			pieces.WhiteKing.FlipBit(E1)
+			pieces.WhiteBishop.FlipBit(F1)
+			pieces.WhiteKnight.FlipBit(G1)
+			pieces.WhiteRook.FlipBit(H1)
+			So(pieces.String(), ShouldEqual, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 		})
 	})
 }
@@ -666,7 +770,7 @@ func TestPosition(t *testing.T) {
 			So(err, ShouldEqual, nil)
 			So(pos.SideToMove, ShouldEqual, BLACK)
 		})
-		Convey("SetPositionFromFen should accept FenString and set position accordingly", func() {
+		Convey("The SetPositionFromFen method should accept FenString and set position accordingly", func() {
 			for fen, position := range validFenstrings {
 				pos := NewPosition()
 				err := pos.SetPositionFromFen(fen)
@@ -677,6 +781,14 @@ func TestPosition(t *testing.T) {
 				pos := NewPosition()
 				err := pos.SetPositionFromFen(fen)
 				So(err, ShouldResemble, expectedErr)
+			}
+		})
+		Convey("the String() method should accept no arguments and return the position as a fen string", func() {
+			for fen := range validFenstrings {
+				pos := NewPosition()
+				err := pos.SetPositionFromFen(fen)
+				So(err, ShouldEqual, nil)
+				So(pos.String(), ShouldEqual, fen)
 			}
 		})
 	})

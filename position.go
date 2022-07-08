@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
-
-	"github.com/rs/zerolog/log"
 )
+
+const totalSquares = 64
 
 //nolint:varnamelen // these are board coordinates. longer names do not make sense
 const (
@@ -75,42 +76,73 @@ const (
 	H1
 )
 
-// type MAILBOX [64]uint32
-
-// const (
-// 	W_KING uint32 = iota
-// 	W_QUEEN
-// 	W_BISHOP_1
-// 	W_BISHOP_2
-// 	W_KNIGHT_1
-// 	W_KNIGHT_2
-// 	W_ROOK_1
-// 	W_ROOK_2
-// 	W_PAWN_1
-// 	W_PAWN_2
-// 	W_PAWN_3
-// 	W_PAWN_4
-// 	W_PAWN_5
-// 	W_PAWN_6
-// 	W_PAWN_7
-// 	W_PAWN_8
-// 	B_KING
-// 	B_QUEEN
-// 	B_BISHOP_1
-// 	B_BISHOP_2
-// 	B_KNIGHT_1
-// 	B_KNIGHT_2
-// 	B_ROOK_1
-// 	B_ROOK_2
-// 	B_PAWN_1
-// 	B_PAWN_2
-// 	B_PAWN_3
-// 	B_PAWN_4
-// 	B_PAWN_5
-// 	B_PAWN_6
-// 	B_PAWN_7
-// 	B_PAWN_8
-// )
+// nolint:gochecknoglobals // this is a pseudo const
+var boardMatrix = map[uint64]string{
+	1:  "A8",
+	2:  "B8",
+	3:  "C8",
+	4:  "D8",
+	5:  "E8",
+	6:  "F8",
+	7:  "G8",
+	8:  "H8",
+	9:  "A7",
+	10: "B7",
+	11: "C7",
+	12: "D7",
+	13: "E7",
+	14: "F7",
+	15: "G7",
+	16: "H7",
+	17: "A6",
+	18: "B6",
+	19: "C6",
+	20: "D6",
+	21: "E6",
+	22: "F6",
+	23: "G6",
+	24: "H6",
+	25: "A5",
+	26: "B5",
+	27: "C5",
+	28: "D5",
+	29: "E5",
+	30: "F5",
+	31: "G5",
+	32: "H5",
+	33: "A4",
+	34: "B4",
+	35: "C4",
+	36: "D4",
+	37: "E4",
+	38: "F4",
+	39: "G4",
+	40: "H4",
+	41: "A3",
+	42: "B3",
+	43: "C3",
+	44: "D3",
+	45: "E3",
+	46: "F3",
+	47: "G3",
+	48: "H3",
+	49: "A2",
+	50: "B2",
+	51: "C2",
+	52: "D2",
+	53: "E2",
+	54: "F2",
+	55: "G2",
+	56: "H2",
+	57: "A1",
+	58: "B1",
+	59: "C1",
+	60: "D1",
+	61: "E1",
+	62: "F1",
+	63: "G1",
+	64: "H1",
+}
 
 const (
 	WHITE uint8 = iota
@@ -141,27 +173,29 @@ func NewBitboard(initPositions ...uint64) *BITBOARD {
 }
 
 func (bb *BITBOARD) FlipBit(bit uint64) {
-	log.Debug().Uint64("bit", bit).Msg("Flipping Bit")
+	bb.board ^= (1 << (bit - 1))
+}
 
-	switch bit {
-	case 0:
-		{
-		}
-	case 1:
-		{
-			oboard := bb.board
-			nboard := bb.board ^ bit
-			bb.board = nboard
-			log.Debug().Interface("OldBoard", oboard).
-				Interface("NewBoard", nboard).
-				Interface("UpdatedBoard", bb.board).
-				Msg("BitFlipped")
-		}
-	default:
-		{
-			bb.board ^= (1 << bit)
+func (bb *BITBOARD) Squares() []string {
+	squares := []string{}
+
+	if (bb.board & 1) > 0 {
+		squares = append(squares, boardMatrix[1])
+	}
+
+	// nolint:gomnd // have to skip 1 which is deal with above due to bit
+	// shift.
+	for square := uint64(2); square <= totalSquares; square++ {
+		if (bb.board & (1 << square)) > 0 {
+			squares = append(squares, boardMatrix[square])
 		}
 	}
+
+	return squares
+}
+
+func (bb *BITBOARD) Occupied(sqr uint8) bool {
+	return (bb.board & (1 << (sqr - 1))) > 0
 }
 
 type PiecePositions struct {
@@ -194,6 +228,110 @@ func NewPiecePositions() *PiecePositions {
 		NewBitboard(),
 		NewBitboard(),
 	}
+}
+
+// nolint:cyclop // not sure how to simplify this further
+func (p *PiecePositions) Occupied(sqr uint8) bool {
+	return p.WhiteKing.Occupied(sqr) ||
+		p.WhiteQueen.Occupied(sqr) ||
+		p.WhiteBishop.Occupied(sqr) ||
+		p.WhiteKnight.Occupied(sqr) ||
+		p.WhiteRook.Occupied(sqr) ||
+		p.WhitePawn.Occupied(sqr) ||
+		p.BlackKing.Occupied(sqr) ||
+		p.BlackQueen.Occupied(sqr) ||
+		p.BlackBishop.Occupied(sqr) ||
+		p.BlackKnight.Occupied(sqr) ||
+		p.BlackRook.Occupied(sqr) ||
+		p.BlackPawn.Occupied(sqr)
+}
+
+// nolint:cyclop // not sure how to simplify this further
+func (p *PiecePositions) OccupiedBy(sqr uint8) string {
+	if !p.Occupied(sqr) {
+		return ""
+	}
+
+	if p.WhiteKing.Occupied(sqr) {
+		return "K"
+	}
+
+	if p.WhiteQueen.Occupied(sqr) {
+		return "Q"
+	}
+
+	if p.WhiteBishop.Occupied(sqr) {
+		return "B"
+	}
+
+	if p.WhiteKnight.Occupied(sqr) {
+		return "N"
+	}
+
+	if p.WhiteRook.Occupied(sqr) {
+		return "R"
+	}
+
+	if p.WhitePawn.Occupied(sqr) {
+		return "P"
+	}
+
+	if p.BlackKing.Occupied(sqr) {
+		return "k"
+	}
+
+	if p.BlackQueen.Occupied(sqr) {
+		return "q"
+	}
+
+	if p.BlackBishop.Occupied(sqr) {
+		return "b"
+	}
+
+	if p.BlackKnight.Occupied(sqr) {
+		return "n"
+	}
+
+	if p.BlackRook.Occupied(sqr) {
+		return "r"
+	}
+
+	if p.BlackPawn.Occupied(sqr) {
+		return "p"
+	}
+
+	return "Bla"
+}
+
+func (p *PiecePositions) String() string {
+	fen := ""
+	unoccupied := 0
+
+	for index := uint8(1); index <= totalSquares; index++ {
+		if p.Occupied(index) {
+			if unoccupied > 0 {
+				fen += strconv.Itoa(unoccupied)
+				unoccupied = 0
+			}
+
+			fen += p.OccupiedBy(index)
+		} else {
+			unoccupied++
+		}
+
+		if index%8 == 0 {
+			if unoccupied > 0 {
+				fen += strconv.Itoa(unoccupied)
+				unoccupied = 0
+			}
+
+			if index < totalSquares {
+				fen += "/"
+			}
+		}
+	}
+
+	return fen
 }
 
 type Position struct {
@@ -435,6 +573,57 @@ func (p *Position) SetPositionFromFen(fen string) error {
 	p.FullMoveCounter = uint8(halfMoveClock)
 
 	return nil
+}
+
+func (p *Position) String() string {
+	fen := ""
+
+	fen += p.Pieces.String()
+	fen += " "
+
+	switch p.SideToMove {
+	case WHITE:
+		fen += "w"
+	case BLACK:
+		fen += "b"
+	}
+
+	fen += " "
+
+	if p.CastlingRights > 0 {
+		for rights := p.CastlingRights; rights != 0; {
+			switch {
+			case rights&WhiteKingSideAllowed > 0:
+				rights ^= WhiteKingSideAllowed
+				fen += "K"
+			case rights&WhiteQueenSideAllowed > 0:
+				rights ^= WhiteQueenSideAllowed
+				fen += "Q"
+			case rights&BlackKingSideAllowed > 0:
+				rights ^= BlackKingSideAllowed
+				fen += "k"
+			case rights&BlackQueenSideAllowed > 0:
+				rights ^= BlackQueenSideAllowed
+				fen += "q"
+			}
+		}
+	} else {
+		fen += "-"
+	}
+
+	fen += " "
+
+	if p.EnPassantTarget == 0 {
+		fen += "-"
+	} else {
+		fen += boardMatrix[p.EnPassantTarget]
+	}
+
+	fen += " "
+
+	fen += fmt.Sprintf("%d %d", p.HalfmoveClock, p.FullMoveCounter)
+
+	return fen
 }
 
 func NewPosition() *Position {
