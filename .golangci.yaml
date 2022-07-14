@@ -12,3 +12,5 @@ linters:
 linter-settings:
   misspell:
     locale: en_GB
+  gomnd:
+

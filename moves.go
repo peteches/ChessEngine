@@ -114,3 +114,81 @@ func OrthaganolFileMoves(src Square) []Square {
 
 	return moves
 }
+
+// nolint:funlen,gocognit,cyclop // Can't think how to simplify this yet
+func DiagonalMoves(src Square) []Square {
+	log.Debug().Str("Source", boardMatrixItoS[src]).
+		Msg("Checking Destinations for Diagonal Moves")
+
+	moves := []Square{}
+
+	if src.File() < HFile && src.Rank() < eighthRank {
+		// nolint:gomnd // 7 is one of the two numbers required to move diagonally
+		for tgtSquare := src >> 7; tgtSquare <= H1 && tgtSquare >= A8; tgtSquare >>= 7 {
+			moves = append(moves, tgtSquare)
+
+			log.Debug().
+				Str("Source", boardMatrixItoS[src]).
+				Str("Square:", boardMatrixItoS[tgtSquare]).
+				Uint64("SquareUint64", uint64(tgtSquare)).
+				Msg("Adding square")
+
+			if tgtSquare.File() == HFile || tgtSquare.Rank() == eighthRank {
+				break
+			}
+		}
+	}
+
+	if src.File() > AFile && src.Rank() > firstRank {
+		// nolint:gomnd // 7 is one of the two numbers required to move diagonally
+		for tgtSquare := src << 7; tgtSquare <= H1 && tgtSquare >= A8; tgtSquare <<= 7 {
+			moves = append(moves, tgtSquare)
+
+			log.Debug().
+				Str("Source", boardMatrixItoS[src]).
+				Str("Square:", boardMatrixItoS[tgtSquare]).
+				Uint64("SquareUint64", uint64(tgtSquare)).
+				Msg("Adding square")
+
+			if tgtSquare.File() == HFile || tgtSquare.Rank() == firstRank {
+				break
+			}
+		}
+	}
+
+	if src.File() > AFile && src.Rank() < eighthRank {
+		// nolint:gomnd // 9 is one of the two numbers required to move diagonally
+		for tgtSquare := src >> 9; tgtSquare <= H1 && tgtSquare >= A8; tgtSquare >>= 9 {
+			moves = append(moves, tgtSquare)
+
+			log.Debug().
+				Str("Source", boardMatrixItoS[src]).
+				Str("Square:", boardMatrixItoS[tgtSquare]).
+				Uint64("SquareUint64", uint64(tgtSquare)).
+				Msg("Adding square")
+
+			if tgtSquare.File() == AFile || tgtSquare.Rank() == eighthRank {
+				break
+			}
+		}
+	}
+
+	if src.File() < HFile && src.Rank() > firstRank {
+		// nolint:gomnd // 9 is one of the two numbers required to move diagonally
+		for tgtSquare := src << 9; tgtSquare <= H1 && tgtSquare >= A8; tgtSquare <<= 9 {
+			moves = append(moves, tgtSquare)
+
+			log.Debug().
+				Str("Source", boardMatrixItoS[src]).
+				Str("Square:", boardMatrixItoS[tgtSquare]).
+				Uint64("SquareUint64", uint64(tgtSquare)).
+				Msg("Adding square")
+
+			if tgtSquare.File() == AFile || tgtSquare.Rank() == firstRank {
+				break
+			}
+		}
+	}
+
+	return moves
+}

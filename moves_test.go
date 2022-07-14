@@ -90,3 +90,24 @@ func TestOrthaganolFileMoves(t *testing.T) {
 		})
 	})
 }
+
+func TestDiagonalMoves(t *testing.T) {
+	Convey("Given a DiagonalMoves() func", t, func() {
+		Convey("It should accept a square and return a list of valid destination moves", func() {
+			testCases := map[Square][]Square{
+				A1: {B2, C3, D4, E5, F6, G7, H8},
+				H8: {A1, B2, C3, D4, E5, F6, G7},
+				A8: {B7, C6, D5, E4, F3, G2, H1},
+				H1: {A8, B7, C6, D5, E4, F3, G2},
+				E5: {B8, C7, D6, F4, G3, H2, A1, B2, C3, D4, F6, G7, H8},
+			}
+			for src, expectedDsts := range testCases {
+				moves := DiagonalMoves(src)
+				So(moves, ShouldHaveLength, len(expectedDsts))
+				for _, dstSqr := range expectedDsts {
+					So(moves, ShouldContain, dstSqr)
+				}
+			}
+		})
+	})
+}
