@@ -69,3 +69,23 @@ func (e *FullMoveCounterError) Error() string {
 		"Received error while parsing Atoi: %s",
 		e.fullMoveCounter, e.fen, e.err)
 }
+
+type MoveError struct {
+	fen  string
+	err  string
+	move string
+}
+
+func (e *MoveError) Error() string {
+	return fmt.Sprintf("Invalid move (%s) in position %s.\n%s",
+		e.move, e.fen, e.err)
+}
+
+type InvalidFenstringError struct {
+	fen string
+	err string
+}
+
+func (e *InvalidFenstringError) Error() string {
+	return fmt.Sprintf("Invalid Fenstring: %s", e.err)
+}

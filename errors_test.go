@@ -128,4 +128,43 @@ func TestErrors(t *testing.T) {
 			So(err.fullMoveCounter, ShouldHaveSameTypeAs, "h")
 		})
 	})
+	Convey("Given a MoveError", t, func() {
+		err := &MoveError{
+			fen:  "fen",
+			err:  "w",
+			move: "e2e4",
+		}
+		errMsg := fmt.Sprintf("Invalid move (%s) in position %s.\n%s",
+			err.move, err.fen, err.err)
+		Convey("It should implement the error interface", func() {
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
+		})
+		Convey("It should have a fen attribute", func() {
+			So(err.fen, ShouldHaveSameTypeAs, "")
+		})
+		Convey("It should have an err attribute", func() {
+			So(err.err, ShouldHaveSameTypeAs, "h")
+		})
+		Convey("It should have a Move attribute", func() {
+			So(err.move, ShouldHaveSameTypeAs, "h")
+		})
+	})
+	Convey("Given an InvalidFenstringError", t, func() {
+		err := &InvalidFenstringError{
+			fen: "fen",
+			err: "w",
+		}
+		errMsg := "Invalid Fenstring: w"
+		Convey("It should implement the error interface", func() {
+			So(err, ShouldImplement, (*error)(nil))
+			So(err.Error(), ShouldEqual, errMsg)
+		})
+		Convey("It should have a fen attribute", func() {
+			So(err.fen, ShouldHaveSameTypeAs, "")
+		})
+		Convey("It should have an err attribute", func() {
+			So(err.err, ShouldHaveSameTypeAs, "h")
+		})
+	})
 }

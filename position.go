@@ -2,16 +2,89 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 const totalSquares = 64
 
+const numFenElements = 6
+
+const (
+	firstRank uint8 = iota + 1
+	secondRank
+	thirdRank
+	fourthRank
+	fifthRank
+	sixthRank
+	seventhRank
+	eighthRank
+)
+
+const (
+	AFile uint8 = iota + 1
+	BFile
+	CFile
+	DFile
+	EFile
+	FFile
+	GFile
+	HFile
+)
+
+type Square uint64
+
+func (s *Square) File() uint8 {
+	switch *s {
+	case A1, A2, A3, A4, A5, A6, A7, A8:
+		return AFile
+	case B1, B2, B3, B4, B5, B6, B7, B8:
+		return BFile
+	case C1, C2, C3, C4, C5, C6, C7, C8:
+		return CFile
+	case D1, D2, D3, D4, D5, D6, D7, D8:
+		return DFile
+	case E1, E2, E3, E4, E5, E6, E7, E8:
+		return EFile
+	case F1, F2, F3, F4, F5, F6, F7, F8:
+		return FFile
+	case G1, G2, G3, G4, G5, G6, G7, G8:
+		return GFile
+	case H1, H2, H3, H4, H5, H6, H7, H8:
+		return HFile
+	default:
+		return 0
+	}
+}
+
+func (s *Square) Rank() uint8 {
+	switch *s {
+	case A1, B1, C1, D1, E1, F1, H1, G1:
+		return firstRank
+	case A2, B2, C2, D2, E2, F2, H2, G2:
+		return secondRank
+	case A3, B3, C3, D3, E3, F3, H3, G3:
+		return thirdRank
+	case A4, B4, C4, D4, E4, F4, H4, G4:
+		return fourthRank
+	case A5, B5, C5, D5, E5, F5, H5, G5:
+		return fifthRank
+	case A6, B6, C6, D6, E6, F6, H6, G6:
+		return sixthRank
+	case A7, B7, C7, D7, E7, F7, H7, G7:
+		return seventhRank
+	case A8, B8, C8, D8, E8, F8, H8, G8:
+		return eighthRank
+	default:
+		return 0
+	}
+}
+
 //nolint:varnamelen // these are board coordinates. longer names do not make sense
 const (
-	A8 uint64 = iota + 1
-	B8
+	A8 Square = 1
+	B8 Square = 1 << iota
 	C8
 	D8
 	E8
@@ -77,71 +150,151 @@ const (
 )
 
 // nolint:gochecknoglobals // this is a pseudo const
-var boardMatrix = map[uint64]string{
-	1:  "A8",
-	2:  "B8",
-	3:  "C8",
-	4:  "D8",
-	5:  "E8",
-	6:  "F8",
-	7:  "G8",
-	8:  "H8",
-	9:  "A7",
-	10: "B7",
-	11: "C7",
-	12: "D7",
-	13: "E7",
-	14: "F7",
-	15: "G7",
-	16: "H7",
-	17: "A6",
-	18: "B6",
-	19: "C6",
-	20: "D6",
-	21: "E6",
-	22: "F6",
-	23: "G6",
-	24: "H6",
-	25: "A5",
-	26: "B5",
-	27: "C5",
-	28: "D5",
-	29: "E5",
-	30: "F5",
-	31: "G5",
-	32: "H5",
-	33: "A4",
-	34: "B4",
-	35: "C4",
-	36: "D4",
-	37: "E4",
-	38: "F4",
-	39: "G4",
-	40: "H4",
-	41: "A3",
-	42: "B3",
-	43: "C3",
-	44: "D3",
-	45: "E3",
-	46: "F3",
-	47: "G3",
-	48: "H3",
-	49: "A2",
-	50: "B2",
-	51: "C2",
-	52: "D2",
-	53: "E2",
-	54: "F2",
-	55: "G2",
-	56: "H2",
-	57: "A1",
-	58: "B1",
-	59: "C1",
-	60: "D1",
-	61: "E1",
-	62: "F1",
-	63: "G1",
-	64: "H1",
+var allSquares = [64]Square{
+	A8, B8, C8, D8, E8, F8, G8, H8,
+	A7, B7, C7, D7, E7, F7, G7, H7,
+	A6, B6, C6, D6, E6, F6, G6, H6,
+	A5, B5, C5, D5, E5, F5, G5, H5,
+	A4, B4, C4, D4, E4, F4, G4, H4,
+	A3, B3, C3, D3, E3, F3, G3, H3,
+	A2, B2, C2, D2, E2, F2, G2, H2,
+	A1, B1, C1, D1, E1, F1, G1, H1,
+}
+
+// nolint:gochecknoglobals // this is a pseudo const
+var boardMatrixStoI = map[string]Square{
+	"A8": A8,
+	"B8": B8,
+	"C8": C8,
+	"D8": D8,
+	"E8": E8,
+	"F8": F8,
+	"G8": G8,
+	"H8": H8,
+	"A7": A7,
+	"B7": B7,
+	"C7": C7,
+	"D7": D7,
+	"E7": E7,
+	"F7": F7,
+	"G7": G7,
+	"H7": H7,
+	"A6": A6,
+	"B6": B6,
+	"C6": C6,
+	"D6": D6,
+	"E6": E6,
+	"F6": F6,
+	"G6": G6,
+	"H6": H6,
+	"A5": A5,
+	"B5": B5,
+	"C5": C5,
+	"D5": D5,
+	"E5": E5,
+	"F5": F5,
+	"G5": G5,
+	"H5": H5,
+	"A4": A4,
+	"B4": B4,
+	"C4": C4,
+	"D4": D4,
+	"E4": E4,
+	"F4": F4,
+	"G4": G4,
+	"H4": H4,
+	"A3": A3,
+	"B3": B3,
+	"C3": C3,
+	"D3": D3,
+	"E3": E3,
+	"F3": F3,
+	"G3": G3,
+	"H3": H3,
+	"A2": A2,
+	"B2": B2,
+	"C2": C2,
+	"D2": D2,
+	"E2": E2,
+	"F2": F2,
+	"G2": G2,
+	"H2": H2,
+	"A1": A1,
+	"B1": B1,
+	"C1": C1,
+	"D1": D1,
+	"E1": E1,
+	"F1": F1,
+	"G1": G1,
+	"H1": H1,
+}
+
+// nolint:gochecknoglobals,dupl // this is a pseudo const
+var boardMatrixItoS = map[Square]string{
+	A8: "A8",
+	B8: "B8",
+	C8: "C8",
+	D8: "D8",
+	E8: "E8",
+	F8: "F8",
+	G8: "G8",
+	H8: "H8",
+	A7: "A7",
+	B7: "B7",
+	C7: "C7",
+	D7: "D7",
+	E7: "E7",
+	F7: "F7",
+	G7: "G7",
+	H7: "H7",
+	A6: "A6",
+	B6: "B6",
+	C6: "C6",
+	D6: "D6",
+	E6: "E6",
+	F6: "F6",
+	G6: "G6",
+	H6: "H6",
+	A5: "A5",
+	B5: "B5",
+	C5: "C5",
+	D5: "D5",
+	E5: "E5",
+	F5: "F5",
+	G5: "G5",
+	H5: "H5",
+	A4: "A4",
+	B4: "B4",
+	C4: "C4",
+	D4: "D4",
+	E4: "E4",
+	F4: "F4",
+	G4: "G4",
+	H4: "H4",
+	A3: "A3",
+	B3: "B3",
+	C3: "C3",
+	D3: "D3",
+	E3: "E3",
+	F3: "F3",
+	G3: "G3",
+	H3: "H3",
+	A2: "A2",
+	B2: "B2",
+	C2: "C2",
+	D2: "D2",
+	E2: "E2",
+	F2: "F2",
+	G2: "G2",
+	H2: "H2",
+	A1: "A1",
+	B1: "B1",
+	C1: "C1",
+	D1: "D1",
+	E1: "E1",
+	F1: "F1",
+	G1: "G1",
+	H1: "H1",
 }
 
 const (
@@ -161,7 +314,7 @@ type BITBOARD struct {
 	board uint64
 }
 
-func NewBitboard(initPositions ...uint64) *BITBOARD {
+func NewBitboard(initPositions ...Square) *BITBOARD {
 	bitBoard := BITBOARD{
 		board: 0,
 	}
@@ -172,30 +325,24 @@ func NewBitboard(initPositions ...uint64) *BITBOARD {
 	return &bitBoard
 }
 
-func (bb *BITBOARD) FlipBit(bit uint64) {
-	bb.board ^= (1 << (bit - 1))
+func (bb *BITBOARD) FlipBit(bit Square) {
+	bb.board ^= uint64(bit)
 }
 
 func (bb *BITBOARD) Squares() []string {
 	squares := []string{}
 
-	if (bb.board & 1) > 0 {
-		squares = append(squares, boardMatrix[1])
-	}
-
-	// nolint:gomnd // have to skip 1 which is deal with above due to bit
-	// shift.
-	for square := uint64(2); square <= totalSquares; square++ {
-		if (bb.board & (1 << square)) > 0 {
-			squares = append(squares, boardMatrix[square])
+	for _, square := range allSquares {
+		if (bb.board & uint64(square)) > 0 {
+			squares = append(squares, boardMatrixItoS[square])
 		}
 	}
 
 	return squares
 }
 
-func (bb *BITBOARD) Occupied(sqr uint8) bool {
-	return (bb.board & (1 << (sqr - 1))) > 0
+func (bb *BITBOARD) Occupied(sqr Square) bool {
+	return (bb.board & uint64(sqr)) > 0
 }
 
 type PiecePositions struct {
@@ -231,7 +378,7 @@ func NewPiecePositions() *PiecePositions {
 }
 
 // nolint:cyclop // not sure how to simplify this further
-func (p *PiecePositions) Occupied(sqr uint8) bool {
+func (p *PiecePositions) Occupied(sqr Square) bool {
 	return p.WhiteKing.Occupied(sqr) ||
 		p.WhiteQueen.Occupied(sqr) ||
 		p.WhiteBishop.Occupied(sqr) ||
@@ -247,7 +394,7 @@ func (p *PiecePositions) Occupied(sqr uint8) bool {
 }
 
 // nolint:cyclop // not sure how to simplify this further
-func (p *PiecePositions) OccupiedBy(sqr uint8) string {
+func (p *PiecePositions) OccupiedBy(sqr Square) string {
 	if !p.Occupied(sqr) {
 		return ""
 	}
@@ -307,25 +454,25 @@ func (p *PiecePositions) String() string {
 	fen := ""
 	unoccupied := 0
 
-	for index := uint8(1); index <= totalSquares; index++ {
-		if p.Occupied(index) {
+	for idx, sqr := range allSquares {
+		if p.Occupied(sqr) {
 			if unoccupied > 0 {
 				fen += strconv.Itoa(unoccupied)
 				unoccupied = 0
 			}
 
-			fen += p.OccupiedBy(index)
+			fen += p.OccupiedBy(sqr)
 		} else {
 			unoccupied++
 		}
 
-		if index%8 == 0 {
+		if (idx+1)%8 == 0 {
 			if unoccupied > 0 {
 				fen += strconv.Itoa(unoccupied)
 				unoccupied = 0
 			}
 
-			if index < totalSquares {
+			if (idx + 1) < totalSquares {
 				fen += "/"
 			}
 		}
@@ -334,72 +481,123 @@ func (p *PiecePositions) String() string {
 	return fen
 }
 
+type Move struct {
+	piece       string
+	srcSquare   Square
+	dstSquare   Square
+	capture     bool
+	promotionTo string
+}
+
+func NewMove(lanMove string) (*Move, *MoveError) {
+	r := "(?i)^(?P<piece>[NBRQK])?(?P<src>[A-H][1-8])(?P<capture>[-X])?(?P<dst>[A-H][1-8])(?P<promotionTo>[NBRQ])?$"
+	moveRegex := regexp.MustCompile(r)
+	matches := moveRegex.FindStringSubmatch(lanMove)
+	pieceIndex := moveRegex.SubexpIndex("piece")
+	srcIndex := moveRegex.SubexpIndex("src")
+	capIndex := moveRegex.SubexpIndex("capture")
+	dstIndex := moveRegex.SubexpIndex("dst")
+	promoIndex := moveRegex.SubexpIndex("promotionTo")
+
+	src := boardMatrixStoI[strings.ToUpper(matches[srcIndex])]
+	dst := boardMatrixStoI[strings.ToUpper(matches[dstIndex])]
+
+	var piece string
+
+	switch strings.ToUpper(matches[pieceIndex]) {
+	case "":
+		piece = "P"
+	default:
+		piece = strings.ToUpper(matches[pieceIndex])
+	}
+
+	return &Move{
+		piece:       piece,
+		srcSquare:   src,
+		dstSquare:   dst,
+		capture:     strings.ToUpper(matches[capIndex]) == "X",
+		promotionTo: strings.ToUpper(matches[promoIndex]),
+	}, nil
+}
+
 type Position struct {
 	Pieces          *PiecePositions
-	EnPassantTarget uint64
+	EnPassantTarget Square
 	SideToMove      uint8
 	CastlingRights  uint8
 	HalfmoveClock   uint8
 	FullMoveCounter uint8
 }
 
-// nolint:funlen // this case statement pushes over the limit but is largely
+// nolint:funlen,cyclop // this case statement pushes over the limit but is largely
 // unavoidable.
 // complexity in this function is as simple as can be made.
-func (p *Position) setPieces(pieces string) *PiecePositionError { // nolint:cyclop
-	// Setting Pieces to required Positions
-	newPosition := NewPiecePositions()
-	offset := 1
+func (p *PiecePositions) setPieces(pieces string) *PiecePositionError {
+	// restet all positions
+	p.BlackRook.board &= uint64(0)
+	p.BlackKnight.board &= uint64(0)
+	p.BlackBishop.board &= uint64(0)
+	p.BlackQueen.board &= uint64(0)
+	p.BlackKing.board &= uint64(0)
+	p.BlackPawn.board &= uint64(0)
+	p.WhiteRook.board &= uint64(0)
+	p.WhiteKnight.board &= uint64(0)
+	p.WhiteBishop.board &= uint64(0)
+	p.WhiteQueen.board &= uint64(0)
+	p.WhiteKing.board &= uint64(0)
+	p.WhitePawn.board &= uint64(0)
+
+	offset := 0
 
 	for index, pos := range strings.ReplaceAll(pieces, "/", "") {
 		switch pos {
 		case 'r':
 			{
-				newPosition.BlackRook.FlipBit(uint64(index + offset))
+				p.BlackRook.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'n':
 			{
-				newPosition.BlackKnight.FlipBit(uint64(index + offset))
+				p.BlackKnight.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'b':
 			{
-				newPosition.BlackBishop.FlipBit(uint64(index + offset))
+				p.BlackBishop.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'q':
 			{
-				newPosition.BlackQueen.FlipBit(uint64(index + offset))
+				p.BlackQueen.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'k':
 			{
-				newPosition.BlackKing.FlipBit(uint64(index + offset))
+				p.BlackKing.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'p':
 			{
-				newPosition.BlackPawn.FlipBit(uint64(index + offset))
+				p.BlackPawn.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'R':
 			{
-				newPosition.WhiteRook.FlipBit(uint64(index + offset))
+				p.WhiteRook.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'N':
 			{
-				newPosition.WhiteKnight.FlipBit(uint64(index + offset))
+				p.WhiteKnight.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'B':
 			{
-				newPosition.WhiteBishop.FlipBit(uint64(index + offset))
+				p.WhiteBishop.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'Q':
 			{
-				newPosition.WhiteQueen.FlipBit(uint64(index + offset))
+				p.WhiteQueen.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'K':
 			{
-				newPosition.WhiteKing.FlipBit(uint64(index + offset))
+				p.WhiteKing.FlipBit(Square(1 << (index + offset)))
 			}
 		case 'P':
 			{
-				newPosition.WhitePawn.FlipBit(uint64(index + offset))
+				p.WhitePawn.FlipBit(Square(1 << (index + offset)))
 			}
 		case '1', '2', '3', '4', '5', '6', '7', '8':
 			{
@@ -413,8 +611,6 @@ func (p *Position) setPieces(pieces string) *PiecePositionError { // nolint:cycl
 			}
 		}
 	}
-
-	p.Pieces = newPosition
 
 	return nil
 }
@@ -484,7 +680,7 @@ func (p *Position) setCastlingRights(rights string) *CastlingRightsError {
 }
 
 func (p *Position) setEnPassantTarget(targetSquare string) *EnPassantTargetError {
-	enPassantMatrix := map[string]uint64{
+	enPassantMatrix := map[string]Square{
 		"-":  0,
 		"A3": A3,
 		"B3": B3,
@@ -514,10 +710,18 @@ func (p *Position) setEnPassantTarget(targetSquare string) *EnPassantTargetError
 	return &EnPassantTargetError{errTarget: targetSquare}
 }
 
+// nolint:funlen // Cannot really make this any simpler
 func (p *Position) SetPositionFromFen(fen string) error {
 	fenElements := strings.Split(fen, " ")
 
-	pieceErr := p.setPieces(fenElements[0])
+	if len(fenElements) != numFenElements {
+		return &InvalidFenstringError{
+			fen: fen,
+			err: "Missing Fen elements",
+		}
+	}
+
+	pieceErr := p.Pieces.setPieces(fenElements[0])
 	if pieceErr != nil {
 		pieceErr.fen = fen
 
@@ -616,7 +820,7 @@ func (p *Position) String() string {
 	if p.EnPassantTarget == 0 {
 		fen += "-"
 	} else {
-		fen += boardMatrix[p.EnPassantTarget]
+		fen += boardMatrixItoS[p.EnPassantTarget]
 	}
 
 	fen += " "
@@ -624,6 +828,10 @@ func (p *Position) String() string {
 	fen += fmt.Sprintf("%d %d", p.HalfmoveClock, p.FullMoveCounter)
 
 	return fen
+}
+
+func (p *Position) IsValidMove(move *Move) bool {
+	return false
 }
 
 func NewPosition() *Position {

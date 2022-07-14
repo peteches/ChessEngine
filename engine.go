@@ -6,10 +6,16 @@ import (
 	"strings"
 )
 
+// nolint:funlen,gocognit,cyclop // not sure how to simplify this yet
 func engine(ctx context.Context) (chan<- string, <-chan string, <-chan string) {
 	toEng := make(chan string)
 	frmEng := make(chan string)
 	debug := make(chan string)
+
+	var err error
+
+	position := NewPosition()
+	startingFen := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 	go func() {
 		defer close(frmEng)
@@ -35,9 +41,29 @@ func engine(ctx context.Context) (chan<- string, <-chan string, <-chan string) {
 								}
 							}()
 						}
+					case "printPosition":
+						{
+							debug <- fmt.Sprintf("info string %s", position.String())
+						}
 					case "position":
 						{
-							go handlePosition(ctx, words[1:])
+							if words[1] == "startpos" {
+								err = position.SetPositionFromFen(startingFen)
+								if err != nil {
+									frmEng <- fmt.Sprintf("info string Error setting position: %s", err)
+								}
+							} else {
+								if len(words) < numFenElements+1 {
+									frmEng <- "info string Error setting position: Invalid Fenstring: Missing Fen elements"
+
+									continue
+								}
+								fen := strings.Join(words[1:numFenElements+1], " ")
+								err = position.SetPositionFromFen(fen)
+								if err != nil {
+									frmEng <- fmt.Sprintf("info string Error setting position: %s", err)
+								}
+							}
 						}
 					default:
 						{

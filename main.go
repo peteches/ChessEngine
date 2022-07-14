@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-// var STARTINGFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-
 func handleUci(ctx context.Context) <-chan string {
 	infoLines := []string{
 		"id name PetechesChessBot 0.0",
@@ -25,9 +23,6 @@ func handleUci(ctx context.Context) <-chan string {
 	}
 
 	return outChan
-}
-
-func handlePosition(ctx context.Context, args []string) {
 }
 
 func scanForCommands(ctx context.Context, r io.Reader) <-chan string {
