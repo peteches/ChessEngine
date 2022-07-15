@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -479,45 +478,6 @@ func (p *PiecePositions) String() string {
 	}
 
 	return fen
-}
-
-type Move struct {
-	piece       string
-	srcSquare   Square
-	dstSquare   Square
-	capture     bool
-	promotionTo string
-}
-
-func NewMove(lanMove string) (*Move, *MoveError) {
-	r := "(?i)^(?P<piece>[NBRQK])?(?P<src>[A-H][1-8])(?P<capture>[-X])?(?P<dst>[A-H][1-8])(?P<promotionTo>[NBRQ])?$"
-	moveRegex := regexp.MustCompile(r)
-	matches := moveRegex.FindStringSubmatch(lanMove)
-	pieceIndex := moveRegex.SubexpIndex("piece")
-	srcIndex := moveRegex.SubexpIndex("src")
-	capIndex := moveRegex.SubexpIndex("capture")
-	dstIndex := moveRegex.SubexpIndex("dst")
-	promoIndex := moveRegex.SubexpIndex("promotionTo")
-
-	src := boardMatrixStoI[strings.ToUpper(matches[srcIndex])]
-	dst := boardMatrixStoI[strings.ToUpper(matches[dstIndex])]
-
-	var piece string
-
-	switch strings.ToUpper(matches[pieceIndex]) {
-	case "":
-		piece = "P"
-	default:
-		piece = strings.ToUpper(matches[pieceIndex])
-	}
-
-	return &Move{
-		piece:       piece,
-		srcSquare:   src,
-		dstSquare:   dst,
-		capture:     strings.ToUpper(matches[capIndex]) == "X",
-		promotionTo: strings.ToUpper(matches[promoIndex]),
-	}, nil
 }
 
 type Position struct {

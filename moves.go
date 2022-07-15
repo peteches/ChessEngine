@@ -1,8 +1,50 @@
 package main
 
 import (
+	"regexp"
+	"strings"
+
 	"github.com/rs/zerolog/log"
 )
+
+type Move struct {
+	piece       string
+	srcSquare   Square
+	dstSquare   Square
+	capture     bool
+	promotionTo string
+}
+
+func NewMove(lanMove string) (*Move, *MoveError) {
+	r := "(?i)^(?P<piece>[NBRQK])?(?P<src>[A-H][1-8])(?P<capture>[-X])?(?P<dst>[A-H][1-8])(?P<promotionTo>[NBRQ])?$"
+	moveRegex := regexp.MustCompile(r)
+	matches := moveRegex.FindStringSubmatch(lanMove)
+	pieceIndex := moveRegex.SubexpIndex("piece")
+	srcIndex := moveRegex.SubexpIndex("src")
+	capIndex := moveRegex.SubexpIndex("capture")
+	dstIndex := moveRegex.SubexpIndex("dst")
+	promoIndex := moveRegex.SubexpIndex("promotionTo")
+
+	src := boardMatrixStoI[strings.ToUpper(matches[srcIndex])]
+	dst := boardMatrixStoI[strings.ToUpper(matches[dstIndex])]
+
+	var piece string
+
+	switch strings.ToUpper(matches[pieceIndex]) {
+	case "":
+		piece = "P"
+	default:
+		piece = strings.ToUpper(matches[pieceIndex])
+	}
+
+	return &Move{
+		piece:       piece,
+		srcSquare:   src,
+		dstSquare:   dst,
+		capture:     strings.ToUpper(matches[capIndex]) == "X",
+		promotionTo: strings.ToUpper(matches[promoIndex]),
+	}, nil
+}
 
 // nolint:cyclop,gocognit // can't really be simplified
 func KnightMoves(src Square) []Square {
@@ -191,6 +233,71 @@ func DiagonalMoves(src Square) []Square {
 				break
 			}
 		}
+	}
+
+	return moves
+}
+
+// nolint:funlen // don't think this can be simplified any more
+func KingMoves(src Square) []Square {
+	log.Debug().Str("Source", boardMatrixItoS[src]).
+		Msg("Checking Destinations for King Moves")
+
+	moves := []Square{}
+
+	// nolint:gomnd // these are movement bit shifts
+	switch {
+	case src == A1:
+		moves = append(moves, src<<9)
+		moves = append(moves, src<<8)
+		moves = append(moves, src<<1)
+
+	case src == A8:
+		moves = append(moves, src>>8)
+		moves = append(moves, src>>7)
+		moves = append(moves, src<<1)
+	case src == H1:
+		moves = append(moves, src<<8)
+		moves = append(moves, src<<7)
+		moves = append(moves, src>>1)
+	case src == H8:
+		moves = append(moves, src>>9)
+		moves = append(moves, src>>8)
+		moves = append(moves, src>>1)
+	case src.Rank() == firstRank:
+		moves = append(moves, src>>1)
+		moves = append(moves, src<<1)
+		moves = append(moves, src<<9)
+		moves = append(moves, src<<8)
+		moves = append(moves, src<<7)
+	case src.Rank() == eighthRank:
+		moves = append(moves, src>>1)
+		moves = append(moves, src<<1)
+		moves = append(moves, src>>9)
+		moves = append(moves, src>>8)
+		moves = append(moves, src>>7)
+	case src.File() == AFile:
+		moves = append(moves, src<<8)
+		moves = append(moves, src>>8)
+		moves = append(moves, src>>7)
+		moves = append(moves, src<<1)
+		moves = append(moves, src<<9)
+	case src.File() == HFile:
+		moves = append(moves, src<<8)
+		moves = append(moves, src>>8)
+		moves = append(moves, src<<7)
+		moves = append(moves, src>>1)
+		moves = append(moves, src>>9)
+
+	default:
+		moves = append(moves, src<<9)
+		moves = append(moves, src<<8)
+		moves = append(moves, src<<7)
+		moves = append(moves, src<<1)
+		moves = append(moves, src>>9)
+		moves = append(moves, src>>8)
+		moves = append(moves, src>>7)
+		moves = append(moves, src>>1)
 	}
 
 	return moves
