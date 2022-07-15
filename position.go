@@ -83,54 +83,14 @@ func (s *Square) Rank() uint8 {
 
 //nolint:varnamelen // these are board coordinates. longer names do not make sense
 const (
-	A8 Square = 1
-	B8 Square = 1 << iota
-	C8
-	D8
-	E8
-	F8
-	G8
-	H8
-	A7
-	B7
-	C7
-	D7
-	E7
-	F7
-	G7
-	H7
-	A6
-	B6
-	C6
-	D6
-	E6
-	F6
-	G6
-	H6
-	A5
-	B5
-	C5
-	D5
-	E5
-	F5
-	G5
-	H5
-	A4
-	B4
-	C4
-	D4
-	E4
-	F4
-	G4
-	H4
-	A3
-	B3
-	C3
-	D3
-	E3
-	F3
-	G3
-	H3
+	A1 Square = 1
+	B1 Square = 1 << iota
+	C1
+	D1
+	E1
+	F1
+	G1
+	H1
 	A2
 	B2
 	C2
@@ -139,14 +99,54 @@ const (
 	F2
 	G2
 	H2
-	A1
-	B1
-	C1
-	D1
-	E1
-	F1
-	G1
-	H1
+	A3
+	B3
+	C3
+	D3
+	E3
+	F3
+	G3
+	H3
+	A4
+	B4
+	C4
+	D4
+	E4
+	F4
+	G4
+	H4
+	A5
+	B5
+	C5
+	D5
+	E5
+	F5
+	G5
+	H5
+	A6
+	B6
+	C6
+	D6
+	E6
+	F6
+	G6
+	H6
+	A7
+	B7
+	C7
+	D7
+	E7
+	F7
+	G7
+	H7
+	A8
+	B8
+	C8
+	D8
+	E8
+	F8
+	G8
+	H8
 )
 
 // nolint:gochecknoglobals // this is a pseudo const
@@ -549,7 +549,20 @@ func (p *PiecePositions) setPieces(pieces string) *PiecePositionError {
 
 	offset := 0
 
-	for index, pos := range strings.ReplaceAll(pieces, "/", "") {
+	// fen strings are odd. They move from A8-H8,A7-H7 etc.
+	// I want them to go A1-H1,A2-H2 etc. This then makes more sense when
+	// using the Constants A1-H8 where A1 is the smallest and H8 is the
+	// largest. Using fenstrings as is A8 is smaller than A1, which isn't
+	// very intuitive. This does mean I need to manipulate the fen string
+	// slightly to allow more intuitive BitBoards
+	pieceRanks := strings.Split(pieces, "/")
+	piecesSensibleOrder := ""
+
+	for i := 7; i >= 0; i-- {
+		piecesSensibleOrder += pieceRanks[i]
+	}
+
+	for index, pos := range piecesSensibleOrder {
 		switch pos {
 		case 'r':
 			{
