@@ -245,3 +245,40 @@ func TestKingMoves(t *testing.T) {
 		})
 	})
 }
+
+func TestPawnMoves(t *testing.T) {
+	Convey("Given a WhitePawnMoves() func", t, func() {
+		Convey("It should accept a square and return a list of valid destination moves", func() {
+			testCases := map[Square][]Square{
+				A2: {A3, A4, B3},
+				H2: {H3, H4, G3},
+				C2: {B3, C3, C4, D3},
+				D3: {C4, D4, E4},
+			}
+			for src, expectedDsts := range testCases {
+				moves := WhitePawnMoves(src)
+				So(moves, ShouldHaveLength, len(expectedDsts))
+				for _, dstSqr := range expectedDsts {
+					So(moves, ShouldContain, dstSqr)
+				}
+			}
+		})
+	})
+	Convey("Given a BlackPawnMoves() func", t, func() {
+		Convey("It should accept a square and return a list of valid destination moves", func() {
+			testCases := map[Square][]Square{
+				A7: {A6, A5, B6},
+				H7: {H6, H5, G6},
+				D3: {C2, D2, E2},
+				C7: {B6, C6, C5, D6},
+			}
+			for src, expectedDsts := range testCases {
+				moves := BlackPawnMoves(src)
+				So(moves, ShouldHaveLength, len(expectedDsts))
+				for _, dstSqr := range expectedDsts {
+					So(moves, ShouldContain, dstSqr)
+				}
+			}
+		})
+	})
+}

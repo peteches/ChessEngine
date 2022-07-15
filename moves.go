@@ -302,3 +302,57 @@ func KingMoves(src Square) []Square {
 
 	return moves
 }
+
+func WhitePawnMoves(src Square) []Square {
+	log.Debug().Str("Source", boardMatrixItoS[src]).
+		Msg("Checking Destinations for White Pawn Moves")
+
+	moves := []Square{}
+
+	// nolint:gomnd // these are movement bit shifts
+	moves = append(moves, src<<8)
+
+	// nolint:gomnd // these are movement bit shifts
+	if src.File() > AFile {
+		moves = append(moves, src<<7)
+	}
+
+	// nolint:gomnd // these are movement bit shifts
+	if src.File() < HFile {
+		moves = append(moves, src<<9)
+	}
+
+	// nolint:gomnd // these are movement bit shifts
+	if src.Rank() == secondRank {
+		moves = append(moves, src<<16)
+	}
+
+	return moves
+}
+
+func BlackPawnMoves(src Square) []Square {
+	log.Debug().Str("Source", boardMatrixItoS[src]).
+		Msg("Checking Destinations for Black Pawn Moves")
+
+	moves := []Square{}
+
+	// nolint:gomnd // these are movement bit shifts
+	moves = append(moves, src>>8)
+
+	// nolint:gomnd // these are movement bit shifts
+	if src.File() > AFile {
+		moves = append(moves, src>>9)
+	}
+
+	// nolint:gomnd // these are movement bit shifts
+	if src.File() < HFile {
+		moves = append(moves, src>>7)
+	}
+
+	// nolint:gomnd // these are movement bit shifts
+	if src.Rank() == seventhRank {
+		moves = append(moves, src>>16)
+	}
+
+	return moves
+}
