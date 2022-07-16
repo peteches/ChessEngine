@@ -97,7 +97,7 @@ func TestMoveStruct(t *testing.T) {
 					So(m, ShouldResemble, expectedMove)
 				}
 			})
-			SkipConvey("It should return an error if the move is invalid", func() {
+			Convey("It should return an error if the move is invalid", func() {
 				testCases := map[string]MoveError{
 					"e2e7": {
 						fen:  "",
@@ -107,10 +107,119 @@ func TestMoveStruct(t *testing.T) {
 				}
 				for move, err := range testCases {
 					m, mError := NewMove(move)
-					So(mError, ShouldResemble, err)
+					So(*mError, ShouldResemble, err)
 					So(m, ShouldEqual, nil)
 				}
 			})
+		})
+	})
+}
+
+// nolint:funlen // Convey testing is verbose
+func TestValidMove(t *testing.T) {
+	Convey("With a ValidMove() function", t, func() {
+		Convey("It should accept a piece, source and destination arguments and return a bool.", func() {
+			testCases := []struct {
+				piece          string
+				src            Square
+				dst            Square
+				expectedResult bool
+			}{
+				{
+					"P",
+					A2,
+					A3,
+					true,
+				},
+				{
+					"P",
+					E7,
+					E5,
+					true,
+				},
+				{
+					"P",
+					E7,
+					E2,
+					false,
+				},
+				{
+					"P",
+					E3,
+					D4,
+					true,
+				},
+				{
+					"N",
+					E3,
+					F5,
+					true,
+				},
+				{
+					"N",
+					E3,
+					D4,
+					false,
+				},
+				{
+					"B",
+					E3,
+					D4,
+					true,
+				},
+				{
+					"B",
+					E3,
+					D3,
+					false,
+				},
+				{
+					"R",
+					E3,
+					D3,
+					true,
+				},
+				{
+					"R",
+					E3,
+					D4,
+					false,
+				},
+				{
+					"K",
+					E3,
+					D4,
+					true,
+				},
+				{
+					"K",
+					E3,
+					D5,
+					false,
+				},
+				{
+					"Q",
+					E3,
+					D4,
+					true,
+				},
+				{
+					"Q",
+					E3,
+					E4,
+					true,
+				},
+				{
+					"Q",
+					E3,
+					D1,
+					false,
+				},
+			}
+			for _, tc := range testCases {
+				result := ValidMove(tc.piece, tc.src, tc.dst)
+				So(result, ShouldEqual, tc.expectedResult)
+			}
 		})
 	})
 }

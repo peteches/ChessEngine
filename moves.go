@@ -33,6 +33,12 @@ func NewMove(lanMove string) (*Move, *MoveError) {
 	switch strings.ToUpper(matches[pieceIndex]) {
 	case "":
 		piece = "P"
+		if !ValidMove(piece, src, dst) {
+			return nil, &MoveError{
+				move: lanMove,
+				err:  "Pawns do not move like that",
+			}
+		}
 	default:
 		piece = strings.ToUpper(matches[pieceIndex])
 	}
@@ -44,6 +50,84 @@ func NewMove(lanMove string) (*Move, *MoveError) {
 		capture:     strings.ToUpper(matches[capIndex]) == "X",
 		promotionTo: strings.ToUpper(matches[promoIndex]),
 	}, nil
+}
+
+/*
+ ValidMove will check a move to ensure it could be valid in principal. This means it will check that the
+ Source and Destination squares are valid for the piece in question. It does not check to see if the move is legal.
+
+ So for instance moving a pawn from e3-e7 is invalid because pawns can only move 1 square forward once they are off
+ their starting position e2-e4 is a valid pawn move, however if the king is in check or another piece is on the e3
+ or e4 squares already the move would not be legal, but would still be considered valid.
+
+ This function is mean to quickly check moves are valid before doing a more expensive check on the legallity of a move.
+*/
+// nolint:funlen,gocognit,cyclop // not sure if this can actually be simplified any.
+func ValidMove(piece string, src, dst Square) bool {
+	switch piece {
+	case "P":
+		for _, validDst := range WhitePawnMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+
+		for _, validDst := range BlackPawnMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+	case "N":
+		for _, validDst := range KnightMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+	case "B":
+		for _, validDst := range DiagonalMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+	case "R":
+		for _, validDst := range OrthaganolFileMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+
+		for _, validDst := range OrthaganolRankMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+	case "K":
+		for _, validDst := range KingMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+	case "Q":
+		for _, validDst := range DiagonalMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+
+		for _, validDst := range OrthaganolFileMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+
+		for _, validDst := range OrthaganolRankMoves(src) {
+			if dst == validDst {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 // nolint:cyclop,gocognit // can't really be simplified
