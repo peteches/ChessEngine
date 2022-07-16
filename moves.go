@@ -4,29 +4,47 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/peteches/ChessEngine/board"
 	"github.com/rs/zerolog/log"
 )
 
 type Move struct {
 	piece       string
-	srcSquare   Square
-	dstSquare   Square
+	srcSquare   board.Square
+	dstSquare   board.Square
 	capture     bool
 	promotionTo string
 }
 
 func NewMove(lanMove string) (*Move, *MoveError) {
+	log.Debug().Str("move", lanMove).Msg("Creating new Move struct")
+
 	r := "(?i)^(?P<piece>[NBRQK])?(?P<src>[A-H][1-8])(?P<capture>[-X])?(?P<dst>[A-H][1-8])(?P<promotionTo>[NBRQ])?$"
 	moveRegex := regexp.MustCompile(r)
 	matches := moveRegex.FindStringSubmatch(lanMove)
+
 	pieceIndex := moveRegex.SubexpIndex("piece")
 	srcIndex := moveRegex.SubexpIndex("src")
 	capIndex := moveRegex.SubexpIndex("capture")
 	dstIndex := moveRegex.SubexpIndex("dst")
 	promoIndex := moveRegex.SubexpIndex("promotionTo")
 
-	src := boardMatrixStoI[strings.ToUpper(matches[srcIndex])]
-	dst := boardMatrixStoI[strings.ToUpper(matches[dstIndex])]
+	log.Debug().
+		Int("pieceIndex", pieceIndex).
+		Int("srcIndex", srcIndex).
+		Int("capIndex", capIndex).
+		Int("dstIndex", dstIndex).
+		Int("promoIndex", promoIndex).
+		Str("piece", matches[pieceIndex]).
+		Str("src", matches[srcIndex]).
+		Str("cap", matches[capIndex]).
+		Str("dst", matches[dstIndex]).
+		Str("promo", matches[promoIndex]).
+		Interface("RegexMatches", matches).
+		Msg("regex indexes")
+
+	src := board.BoardMatrixStoI[strings.ToUpper(matches[srcIndex])]
+	dst := board.BoardMatrixStoI[strings.ToUpper(matches[dstIndex])]
 
 	var piece string
 
@@ -63,7 +81,7 @@ func NewMove(lanMove string) (*Move, *MoveError) {
  This function is mean to quickly check moves are valid before doing a more expensive check on the legallity of a move.
 */
 // nolint:funlen,gocognit,cyclop // not sure if this can actually be simplified any.
-func ValidMove(piece string, src, dst Square) bool {
+func ValidMove(piece string, src, dst board.Square) bool {
 	switch piece {
 	case "P":
 		for _, validDst := range WhitePawnMoves(src) {
@@ -131,66 +149,66 @@ func ValidMove(piece string, src, dst Square) bool {
 }
 
 // nolint:cyclop,gocognit // can't really be simplified
-func KnightMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func KnightMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for Knight Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() > firstRank && src.File() > BFile {
+	if src.Rank() > board.FirstRank && src.File() > board.BFile {
 		moves = append(moves, src>>10)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() < eighthRank && src.File() < GFile {
+	if src.Rank() < board.EighthRank && src.File() < board.GFile {
 		moves = append(moves, src<<10)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() > secondRank && src.File() < HFile {
+	if src.Rank() > board.SecondRank && src.File() < board.HFile {
 		moves = append(moves, src>>15)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() < seventhRank && src.File() > AFile {
+	if src.Rank() < board.SeventhRank && src.File() > board.AFile {
 		moves = append(moves, src<<15)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() < seventhRank && src.File() < HFile {
+	if src.Rank() < board.SeventhRank && src.File() < board.HFile {
 		moves = append(moves, src<<17)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() > secondRank && src.File() > AFile {
+	if src.Rank() > board.SecondRank && src.File() > board.AFile {
 		moves = append(moves, src>>17)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() < eighthRank && src.File() > BFile {
+	if src.Rank() < board.EighthRank && src.File() > board.BFile {
 		moves = append(moves, src<<6)
 	}
 
 	// nolint:gomnd // not sure how to name these as constants
-	if src.Rank() > firstRank && src.File() < GFile {
+	if src.Rank() > board.FirstRank && src.File() < board.GFile {
 		moves = append(moves, src>>6)
 	}
 
 	return moves
 }
 
-func OrthaganolRankMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func OrthaganolRankMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for Rank Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
 	tgtSquare := src >> 1
 	for tgtSquare.Rank() == src.Rank() {
 		log.Debug().
-			Str("Source", boardMatrixItoS[src]).
-			Str("Square:", boardMatrixItoS[tgtSquare]).
+			Str("Source", board.BoardMatrixItoS[src]).
+			Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
 			Msg("Adding square")
 
 		moves = append(moves, tgtSquare)
@@ -200,8 +218,8 @@ func OrthaganolRankMoves(src Square) []Square {
 	tgtSquare = src << 1
 	for tgtSquare.Rank() == src.Rank() {
 		log.Debug().
-			Str("Source", boardMatrixItoS[src]).
-			Str("Square:", boardMatrixItoS[tgtSquare]).
+			Str("Source", board.BoardMatrixItoS[src]).
+			Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
 			Msg("Adding square")
 
 		moves = append(moves, tgtSquare)
@@ -211,18 +229,18 @@ func OrthaganolRankMoves(src Square) []Square {
 	return moves
 }
 
-func OrthaganolFileMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func OrthaganolFileMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for File Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
 	// nolint:gomnd // 8 is the number of squares between Ranks
 	tgtSquare := src >> 8
 	for tgtSquare.File() == src.File() {
 		log.Debug().
-			Str("Source", boardMatrixItoS[src]).
-			Str("Square:", boardMatrixItoS[tgtSquare]).
+			Str("Source", board.BoardMatrixItoS[src]).
+			Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
 			Msg("Adding square")
 
 		moves = append(moves, tgtSquare)
@@ -233,8 +251,8 @@ func OrthaganolFileMoves(src Square) []Square {
 	tgtSquare = src << 8
 	for tgtSquare.File() == src.File() {
 		log.Debug().
-			Str("Source", boardMatrixItoS[src]).
-			Str("Square:", boardMatrixItoS[tgtSquare]).
+			Str("Source", board.BoardMatrixItoS[src]).
+			Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
 			Msg("Adding square")
 
 		moves = append(moves, tgtSquare)
@@ -245,75 +263,75 @@ func OrthaganolFileMoves(src Square) []Square {
 }
 
 // nolint:funlen,gocognit,cyclop // Can't think how to simplify this yet
-func DiagonalMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func DiagonalMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for Diagonal Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
-	if src.File() < HFile && src.Rank() > firstRank {
+	if src.File() < board.HFile && src.Rank() > board.FirstRank {
 		// nolint:gomnd // 7 is one of the two numbers required to move diagonally
-		for tgtSquare := src >> 7; tgtSquare <= H8 && tgtSquare >= A1; tgtSquare >>= 7 {
+		for tgtSquare := src >> 7; tgtSquare <= board.H8 && tgtSquare >= board.A1; tgtSquare >>= 7 {
 			moves = append(moves, tgtSquare)
 
 			log.Debug().
-				Str("Source", boardMatrixItoS[src]).
-				Str("Square:", boardMatrixItoS[tgtSquare]).
-				Uint64("SquareUint64", uint64(tgtSquare)).
+				Str("Source", board.BoardMatrixItoS[src]).
+				Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
+				Uint64("board.SquareUint64", uint64(tgtSquare)).
 				Msg("Adding square")
 
-			if tgtSquare.File() == HFile || tgtSquare.Rank() == firstRank {
+			if tgtSquare.File() == board.HFile || tgtSquare.Rank() == board.FirstRank {
 				break
 			}
 		}
 	}
 
-	if src.File() > AFile && src.Rank() < eighthRank {
+	if src.File() > board.AFile && src.Rank() < board.EighthRank {
 		// nolint:gomnd // 7 is one of the two numbers required to move diagonally
-		for tgtSquare := src << 7; tgtSquare <= H8 && tgtSquare >= A1; tgtSquare <<= 7 {
+		for tgtSquare := src << 7; tgtSquare <= board.H8 && tgtSquare >= board.A1; tgtSquare <<= 7 {
 			moves = append(moves, tgtSquare)
 
 			log.Debug().
-				Str("Source", boardMatrixItoS[src]).
-				Str("Square:", boardMatrixItoS[tgtSquare]).
-				Uint64("SquareUint64", uint64(tgtSquare)).
+				Str("Source", board.BoardMatrixItoS[src]).
+				Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
+				Uint64("board.SquareUint64", uint64(tgtSquare)).
 				Msg("Adding square")
 
-			if tgtSquare.File() == HFile || tgtSquare.Rank() == eighthRank {
+			if tgtSquare.File() == board.HFile || tgtSquare.Rank() == board.EighthRank {
 				break
 			}
 		}
 	}
 
-	if src.File() > AFile && src.Rank() > firstRank {
+	if src.File() > board.AFile && src.Rank() > board.FirstRank {
 		// nolint:gomnd // 9 is one of the two numbers required to move diagonally
-		for tgtSquare := src >> 9; tgtSquare <= H8 && tgtSquare >= A1; tgtSquare >>= 9 {
+		for tgtSquare := src >> 9; tgtSquare <= board.H8 && tgtSquare >= board.A1; tgtSquare >>= 9 {
 			moves = append(moves, tgtSquare)
 
 			log.Debug().
-				Str("Source", boardMatrixItoS[src]).
-				Str("Square:", boardMatrixItoS[tgtSquare]).
-				Uint64("SquareUint64", uint64(tgtSquare)).
+				Str("Source", board.BoardMatrixItoS[src]).
+				Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
+				Uint64("board.SquareUint64", uint64(tgtSquare)).
 				Msg("Adding square")
 
-			if tgtSquare.File() == AFile || tgtSquare.Rank() == firstRank {
+			if tgtSquare.File() == board.AFile || tgtSquare.Rank() == board.FirstRank {
 				break
 			}
 		}
 	}
 
-	if src.File() < HFile && src.Rank() < eighthRank {
+	if src.File() < board.HFile && src.Rank() < board.EighthRank {
 		// nolint:gomnd // 9 is one of the two numbers required to move diagonally
-		for tgtSquare := src << 9; tgtSquare <= H8 && tgtSquare >= A1; tgtSquare <<= 9 {
+		for tgtSquare := src << 9; tgtSquare <= board.H8 && tgtSquare >= board.A1; tgtSquare <<= 9 {
 			moves = append(moves, tgtSquare)
 
 			log.Debug().
-				Str("Source", boardMatrixItoS[src]).
-				Str("Square:", boardMatrixItoS[tgtSquare]).
-				Uint64("SquareUint64", uint64(tgtSquare)).
+				Str("Source", board.BoardMatrixItoS[src]).
+				Str("board.Square:", board.BoardMatrixItoS[tgtSquare]).
+				Uint64("board.SquareUint64", uint64(tgtSquare)).
 				Msg("Adding square")
 
-			if tgtSquare.File() == AFile || tgtSquare.Rank() == eighthRank {
+			if tgtSquare.File() == board.AFile || tgtSquare.Rank() == board.EighthRank {
 				break
 			}
 		}
@@ -323,50 +341,50 @@ func DiagonalMoves(src Square) []Square {
 }
 
 // nolint:funlen // don't think this can be simplified any more
-func KingMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func KingMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for King Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
 	// nolint:gomnd // these are movement bit shifts
 	switch {
-	case src == A1:
+	case src == board.A1:
 		moves = append(moves, src<<9)
 		moves = append(moves, src<<8)
 		moves = append(moves, src<<1)
 
-	case src == A8:
+	case src == board.A8:
 		moves = append(moves, src>>8)
 		moves = append(moves, src>>7)
 		moves = append(moves, src<<1)
-	case src == H1:
+	case src == board.H1:
 		moves = append(moves, src<<8)
 		moves = append(moves, src<<7)
 		moves = append(moves, src>>1)
-	case src == H8:
+	case src == board.H8:
 		moves = append(moves, src>>9)
 		moves = append(moves, src>>8)
 		moves = append(moves, src>>1)
-	case src.Rank() == firstRank:
+	case src.Rank() == board.FirstRank:
 		moves = append(moves, src>>1)
 		moves = append(moves, src<<1)
 		moves = append(moves, src<<9)
 		moves = append(moves, src<<8)
 		moves = append(moves, src<<7)
-	case src.Rank() == eighthRank:
+	case src.Rank() == board.EighthRank:
 		moves = append(moves, src>>1)
 		moves = append(moves, src<<1)
 		moves = append(moves, src>>9)
 		moves = append(moves, src>>8)
 		moves = append(moves, src>>7)
-	case src.File() == AFile:
+	case src.File() == board.AFile:
 		moves = append(moves, src<<8)
 		moves = append(moves, src>>8)
 		moves = append(moves, src>>7)
 		moves = append(moves, src<<1)
 		moves = append(moves, src<<9)
-	case src.File() == HFile:
+	case src.File() == board.HFile:
 		moves = append(moves, src<<8)
 		moves = append(moves, src>>8)
 		moves = append(moves, src<<7)
@@ -387,54 +405,54 @@ func KingMoves(src Square) []Square {
 	return moves
 }
 
-func WhitePawnMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func WhitePawnMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for White Pawn Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
 	// nolint:gomnd // these are movement bit shifts
 	moves = append(moves, src<<8)
 
 	// nolint:gomnd // these are movement bit shifts
-	if src.File() > AFile {
+	if src.File() > board.AFile {
 		moves = append(moves, src<<7)
 	}
 
 	// nolint:gomnd // these are movement bit shifts
-	if src.File() < HFile {
+	if src.File() < board.HFile {
 		moves = append(moves, src<<9)
 	}
 
 	// nolint:gomnd // these are movement bit shifts
-	if src.Rank() == secondRank {
+	if src.Rank() == board.SecondRank {
 		moves = append(moves, src<<16)
 	}
 
 	return moves
 }
 
-func BlackPawnMoves(src Square) []Square {
-	log.Debug().Str("Source", boardMatrixItoS[src]).
+func BlackPawnMoves(src board.Square) []board.Square {
+	log.Debug().Str("Source", board.BoardMatrixItoS[src]).
 		Msg("Checking Destinations for Black Pawn Moves")
 
-	moves := []Square{}
+	moves := []board.Square{}
 
 	// nolint:gomnd // these are movement bit shifts
 	moves = append(moves, src>>8)
 
 	// nolint:gomnd // these are movement bit shifts
-	if src.File() > AFile {
+	if src.File() > board.AFile {
 		moves = append(moves, src>>9)
 	}
 
 	// nolint:gomnd // these are movement bit shifts
-	if src.File() < HFile {
+	if src.File() < board.HFile {
 		moves = append(moves, src>>7)
 	}
 
 	// nolint:gomnd // these are movement bit shifts
-	if src.Rank() == seventhRank {
+	if src.Rank() == board.SeventhRank {
 		moves = append(moves, src>>16)
 	}
 

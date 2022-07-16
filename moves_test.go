@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/peteches/ChessEngine/board"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -11,8 +12,8 @@ func TestMoveStruct(t *testing.T) {
 	Convey("Given a Move struct", t, func() {
 		Convey("it should have relevant fields", func() {
 			move := Move{}
-			So(move.srcSquare, ShouldHaveSameTypeAs, Square(0))
-			So(move.dstSquare, ShouldHaveSameTypeAs, Square(0))
+			So(move.srcSquare, ShouldHaveSameTypeAs, board.Square(0))
+			So(move.dstSquare, ShouldHaveSameTypeAs, board.Square(0))
 			So(move.capture, ShouldHaveSameTypeAs, true)
 			So(move.promotionTo, ShouldHaveSameTypeAs, "")
 			So(move.piece, ShouldHaveSameTypeAs, "")
@@ -22,71 +23,71 @@ func TestMoveStruct(t *testing.T) {
 				testCases := map[string]*Move{
 					"e2e4": {
 						piece:       "P",
-						srcSquare:   E2,
-						dstSquare:   E4,
+						srcSquare:   board.E2,
+						dstSquare:   board.E4,
 						capture:     false,
 						promotionTo: "",
 					},
 					"e2-e4": {
 						piece:       "P",
-						srcSquare:   E2,
-						dstSquare:   E4,
+						srcSquare:   board.E2,
+						dstSquare:   board.E4,
 						capture:     false,
 						promotionTo: "",
 					},
 					"e2xe3": {
 						piece:       "P",
-						srcSquare:   E2,
-						dstSquare:   E3,
+						srcSquare:   board.E2,
+						dstSquare:   board.E3,
 						capture:     true,
 						promotionTo: "",
 					},
 					"e7e8Q": {
-						srcSquare:   E7,
+						srcSquare:   board.E7,
 						piece:       "P",
-						dstSquare:   E8,
+						dstSquare:   board.E8,
 						capture:     false,
 						promotionTo: "Q",
 					},
 					"E2E4": {
 						piece:       "P",
-						srcSquare:   E2,
-						dstSquare:   E4,
+						srcSquare:   board.E2,
+						dstSquare:   board.E4,
 						capture:     false,
 						promotionTo: "",
 					},
 					"E2-E4": {
 						piece:       "P",
-						srcSquare:   E2,
-						dstSquare:   E4,
+						srcSquare:   board.E2,
+						dstSquare:   board.E4,
 						capture:     false,
 						promotionTo: "",
 					},
 					"E2XE3": {
-						srcSquare:   E2,
+						srcSquare:   board.E2,
 						piece:       "P",
-						dstSquare:   E3,
+						dstSquare:   board.E3,
 						capture:     true,
 						promotionTo: "",
 					},
 					"E7E8q": {
 						piece:       "P",
-						srcSquare:   E7,
-						dstSquare:   E8,
+						srcSquare:   board.E7,
+						dstSquare:   board.E8,
 						capture:     false,
 						promotionTo: "Q",
 					},
 					"ke3-f5": {
 						piece:       "K",
-						srcSquare:   E3,
-						dstSquare:   F5,
+						srcSquare:   board.E3,
+						dstSquare:   board.F5,
 						capture:     false,
 						promotionTo: "",
 					},
 					"qH3xe5": {
 						piece:       "Q",
-						srcSquare:   H3,
-						dstSquare:   E5,
+						srcSquare:   board.H3,
+						dstSquare:   board.E5,
 						capture:     true,
 						promotionTo: "",
 					},
@@ -121,98 +122,98 @@ func TestValidMove(t *testing.T) {
 		Convey("It should accept a piece, source and destination arguments and return a bool.", func() {
 			testCases := []struct {
 				piece          string
-				src            Square
-				dst            Square
+				src            board.Square
+				dst            board.Square
 				expectedResult bool
 			}{
 				{
 					"P",
-					A2,
-					A3,
+					board.A2,
+					board.A3,
 					true,
 				},
 				{
 					"P",
-					E7,
-					E5,
+					board.E7,
+					board.E5,
 					true,
 				},
 				{
 					"P",
-					E7,
-					E2,
+					board.E7,
+					board.E2,
 					false,
 				},
 				{
 					"P",
-					E3,
-					D4,
+					board.E3,
+					board.D4,
 					true,
 				},
 				{
 					"N",
-					E3,
-					F5,
+					board.E3,
+					board.F5,
 					true,
 				},
 				{
 					"N",
-					E3,
-					D4,
+					board.E3,
+					board.D4,
 					false,
 				},
 				{
 					"B",
-					E3,
-					D4,
+					board.E3,
+					board.D4,
 					true,
 				},
 				{
 					"B",
-					E3,
-					D3,
+					board.E3,
+					board.D3,
 					false,
 				},
 				{
 					"R",
-					E3,
-					D3,
+					board.E3,
+					board.D3,
 					true,
 				},
 				{
 					"R",
-					E3,
-					D4,
+					board.E3,
+					board.D4,
 					false,
 				},
 				{
 					"K",
-					E3,
-					D4,
+					board.E3,
+					board.D4,
 					true,
 				},
 				{
 					"K",
-					E3,
-					D5,
+					board.E3,
+					board.D5,
 					false,
 				},
 				{
 					"Q",
-					E3,
-					D4,
+					board.E3,
+					board.D4,
 					true,
 				},
 				{
 					"Q",
-					E3,
-					E4,
+					board.E3,
+					board.E4,
 					true,
 				},
 				{
 					"Q",
-					E3,
-					D1,
+					board.E3,
+					board.D1,
 					false,
 				},
 			}
@@ -227,21 +228,21 @@ func TestValidMove(t *testing.T) {
 func TestKnightMoves(t *testing.T) {
 	Convey("With a KnightMoves() func", t, func() {
 		Convey("It should accept a square and return list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A1: {
-					C2, B3,
+			testCases := map[board.Square][]board.Square{
+				board.A1: {
+					board.C2, board.B3,
 				},
-				A8: {
-					C7, B6,
+				board.A8: {
+					board.C7, board.B6,
 				},
-				H1: {
-					G3, F2,
+				board.H1: {
+					board.G3, board.F2,
 				},
-				H8: {
-					G6, F7,
+				board.H8: {
+					board.G6, board.F7,
 				},
-				E5: {
-					D3, D7, F3, F7, G4, G6, C4, C6,
+				board.E5: {
+					board.D3, board.D7, board.F3, board.F7, board.G4, board.G6, board.C4, board.C6,
 				},
 			}
 			for src, expectedDsts := range testCases {
@@ -255,21 +256,19 @@ func TestKnightMoves(t *testing.T) {
 	})
 }
 
-// nolint:dupl // this could be merged with Rank Moves but prefer clarity of
-// separation.
 func TestOrthaganolRankMoves(t *testing.T) {
 	Convey("With an OrthaganolRankMoves() func", t, func() {
 		Convey("It should accept a square and return a list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A1: {B1, C1, D1, E1, F1, G1, H1},
-				H1: {A1, B1, C1, D1, E1, F1, G1},
-				C1: {A1, B1, D1, E1, F1, G1, H1},
-				A8: {B8, C8, D8, E8, F8, G8, H8},
-				H8: {A8, B8, C8, D8, E8, F8, G8},
-				C8: {A8, B8, D8, E8, F8, G8, H8},
-				A6: {B6, C6, D6, E6, F6, G6, H6},
-				H6: {A6, B6, C6, D6, E6, F6, G6},
-				C6: {A6, B6, D6, E6, F6, G6, H6},
+			testCases := map[board.Square][]board.Square{
+				board.A1: {board.B1, board.C1, board.D1, board.E1, board.F1, board.G1, board.H1},
+				board.H1: {board.A1, board.B1, board.C1, board.D1, board.E1, board.F1, board.G1},
+				board.C1: {board.A1, board.B1, board.D1, board.E1, board.F1, board.G1, board.H1},
+				board.A8: {board.B8, board.C8, board.D8, board.E8, board.F8, board.G8, board.H8},
+				board.H8: {board.A8, board.B8, board.C8, board.D8, board.E8, board.F8, board.G8},
+				board.C8: {board.A8, board.B8, board.D8, board.E8, board.F8, board.G8, board.H8},
+				board.A6: {board.B6, board.C6, board.D6, board.E6, board.F6, board.G6, board.H6},
+				board.H6: {board.A6, board.B6, board.C6, board.D6, board.E6, board.F6, board.G6},
+				board.C6: {board.A6, board.B6, board.D6, board.E6, board.F6, board.G6, board.H6},
 			}
 			for src, expectedDsts := range testCases {
 				moves := OrthaganolRankMoves(src)
@@ -282,21 +281,19 @@ func TestOrthaganolRankMoves(t *testing.T) {
 	})
 }
 
-// nolint:dupl // this could be merged with Rank Moves but prefer clarity of
-// separation.
 func TestOrthaganolFileMoves(t *testing.T) {
 	Convey("With an OrthaganolFileMoves() func", t, func() {
 		Convey("It should accept a square and return a list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A1: {A2, A3, A4, A5, A6, A7, A8},
-				A8: {A1, A2, A3, A4, A5, A6, A7},
-				A5: {A1, A2, A3, A4, A6, A7, A8},
-				H1: {H2, H3, H4, H5, H6, H7, H8},
-				H8: {H1, H2, H3, H4, H5, H6, H7},
-				H5: {H1, H2, H3, H4, H6, H7, H8},
-				E1: {E2, E3, E4, E5, E6, E7, E8},
-				E8: {E1, E2, E3, E4, E5, E6, E7},
-				E5: {E1, E2, E3, E4, E6, E7, E8},
+			testCases := map[board.Square][]board.Square{
+				board.A1: {board.A2, board.A3, board.A4, board.A5, board.A6, board.A7, board.A8},
+				board.A8: {board.A1, board.A2, board.A3, board.A4, board.A5, board.A6, board.A7},
+				board.A5: {board.A1, board.A2, board.A3, board.A4, board.A6, board.A7, board.A8},
+				board.H1: {board.H2, board.H3, board.H4, board.H5, board.H6, board.H7, board.H8},
+				board.H8: {board.H1, board.H2, board.H3, board.H4, board.H5, board.H6, board.H7},
+				board.H5: {board.H1, board.H2, board.H3, board.H4, board.H6, board.H7, board.H8},
+				board.E1: {board.E2, board.E3, board.E4, board.E5, board.E6, board.E7, board.E8},
+				board.E8: {board.E1, board.E2, board.E3, board.E4, board.E5, board.E6, board.E7},
+				board.E5: {board.E1, board.E2, board.E3, board.E4, board.E6, board.E7, board.E8},
 			}
 			for src, expectedDsts := range testCases {
 				moves := OrthaganolFileMoves(src)
@@ -312,12 +309,15 @@ func TestOrthaganolFileMoves(t *testing.T) {
 func TestDiagonalMoves(t *testing.T) {
 	Convey("Given a DiagonalMoves() func", t, func() {
 		Convey("It should accept a square and return a list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A1: {B2, C3, D4, E5, F6, G7, H8},
-				H8: {A1, B2, C3, D4, E5, F6, G7},
-				A8: {B7, C6, D5, E4, F3, G2, H1},
-				H1: {A8, B7, C6, D5, E4, F3, G2},
-				E5: {B8, C7, D6, F4, G3, H2, A1, B2, C3, D4, F6, G7, H8},
+			testCases := map[board.Square][]board.Square{
+				board.A1: {board.B2, board.C3, board.D4, board.E5, board.F6, board.G7, board.H8},
+				board.H8: {board.A1, board.B2, board.C3, board.D4, board.E5, board.F6, board.G7},
+				board.A8: {board.B7, board.C6, board.D5, board.E4, board.F3, board.G2, board.H1},
+				board.H1: {board.A8, board.B7, board.C6, board.D5, board.E4, board.F3, board.G2},
+				board.E5: {
+					board.B8, board.C7, board.D6, board.F4, board.G3, board.H2, board.A1,
+					board.B2, board.C3, board.D4, board.F6, board.G7, board.H8,
+				},
 			}
 			for src, expectedDsts := range testCases {
 				moves := DiagonalMoves(src)
@@ -333,16 +333,16 @@ func TestDiagonalMoves(t *testing.T) {
 func TestKingMoves(t *testing.T) {
 	Convey("Given a KingMoves() func", t, func() {
 		Convey("It should accept a square and return a list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A1: {A2, B2, B1},
-				H8: {H7, G7, G8},
-				A8: {A7, B7, B8},
-				H1: {H2, G2, G1},
-				H2: {H1, H3, G1, G2, G3},
-				A7: {A8, A6, B8, B7, B6},
-				C1: {B1, B2, C2, D1, D2},
-				E8: {D7, D8, E7, F7, F8},
-				E5: {D4, D5, D6, E4, E6, F4, F5, F6},
+			testCases := map[board.Square][]board.Square{
+				board.A1: {board.A2, board.B2, board.B1},
+				board.H8: {board.H7, board.G7, board.G8},
+				board.A8: {board.A7, board.B7, board.B8},
+				board.H1: {board.H2, board.G2, board.G1},
+				board.H2: {board.H1, board.H3, board.G1, board.G2, board.G3},
+				board.A7: {board.A8, board.A6, board.B8, board.B7, board.B6},
+				board.C1: {board.B1, board.B2, board.C2, board.D1, board.D2},
+				board.E8: {board.D7, board.D8, board.E7, board.F7, board.F8},
+				board.E5: {board.D4, board.D5, board.D6, board.E4, board.E6, board.F4, board.F5, board.F6},
 			}
 			for src, expectedDsts := range testCases {
 				moves := KingMoves(src)
@@ -358,11 +358,11 @@ func TestKingMoves(t *testing.T) {
 func TestPawnMoves(t *testing.T) {
 	Convey("Given a WhitePawnMoves() func", t, func() {
 		Convey("It should accept a square and return a list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A2: {A3, A4, B3},
-				H2: {H3, H4, G3},
-				C2: {B3, C3, C4, D3},
-				D3: {C4, D4, E4},
+			testCases := map[board.Square][]board.Square{
+				board.A2: {board.A3, board.A4, board.B3},
+				board.H2: {board.H3, board.H4, board.G3},
+				board.C2: {board.B3, board.C3, board.C4, board.D3},
+				board.D3: {board.C4, board.D4, board.E4},
 			}
 			for src, expectedDsts := range testCases {
 				moves := WhitePawnMoves(src)
@@ -375,11 +375,11 @@ func TestPawnMoves(t *testing.T) {
 	})
 	Convey("Given a BlackPawnMoves() func", t, func() {
 		Convey("It should accept a square and return a list of valid destination moves", func() {
-			testCases := map[Square][]Square{
-				A7: {A6, A5, B6},
-				H7: {H6, H5, G6},
-				D3: {C2, D2, E2},
-				C7: {B6, C6, C5, D6},
+			testCases := map[board.Square][]board.Square{
+				board.A7: {board.A6, board.A5, board.B6},
+				board.H7: {board.H6, board.H5, board.G6},
+				board.D3: {board.C2, board.D2, board.E2},
+				board.C7: {board.B6, board.C6, board.C5, board.D6},
 			}
 			for src, expectedDsts := range testCases {
 				moves := BlackPawnMoves(src)

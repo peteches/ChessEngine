@@ -1,4 +1,4 @@
-module chessbot
+module github.com/peteches/ChessEngine
 
 go 1.18
 

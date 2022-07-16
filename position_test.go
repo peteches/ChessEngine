@@ -1,60 +1,55 @@
 package main
 
 import (
-	"os"
 	"testing"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/peteches/ChessEngine/board"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 // nolint:gochecknoglobals // this is for testing purposes
-var DEBUG = false
-
-// nolint:gochecknoglobals // this is for testing purposes
 var validPiecePositions = map[string]PiecePositions{
 	"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR": {
-		WhiteKing:   NewBitboard(E1),
-		WhiteQueen:  NewBitboard(D1),
-		WhiteBishop: NewBitboard(C1, F1),
-		WhiteKnight: NewBitboard(B1, G1),
-		WhiteRook:   NewBitboard(A1, H1),
-		WhitePawn:   NewBitboard(A2, B2, C2, D2, E2, F2, G2, H2),
-		BlackKing:   NewBitboard(E8),
-		BlackQueen:  NewBitboard(D8),
-		BlackBishop: NewBitboard(C8, F8),
-		BlackKnight: NewBitboard(B8, G8),
-		BlackRook:   NewBitboard(A8, H8),
-		BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+		WhiteKing:   board.NewBitboard(board.E1),
+		WhiteQueen:  board.NewBitboard(board.D1),
+		WhiteBishop: board.NewBitboard(board.C1, board.F1),
+		WhiteKnight: board.NewBitboard(board.B1, board.G1),
+		WhiteRook:   board.NewBitboard(board.A1, board.H1),
+		WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E2, board.F2, board.G2, board.H2),
+		BlackKing:   board.NewBitboard(board.E8),
+		BlackQueen:  board.NewBitboard(board.D8),
+		BlackBishop: board.NewBitboard(board.C8, board.F8),
+		BlackKnight: board.NewBitboard(board.B8, board.G8),
+		BlackRook:   board.NewBitboard(board.A8, board.H8),
+		BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR": {
-		WhiteKing:   NewBitboard(E1),
-		WhiteQueen:  NewBitboard(D1),
-		WhiteBishop: NewBitboard(C1, F1),
-		WhiteKnight: NewBitboard(B1, G1),
-		WhiteRook:   NewBitboard(A1, H1),
-		WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-		BlackKing:   NewBitboard(E8),
-		BlackQueen:  NewBitboard(D8),
-		BlackBishop: NewBitboard(C8, F8),
-		BlackKnight: NewBitboard(B8, G8),
-		BlackRook:   NewBitboard(A8, H8),
-		BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+		WhiteKing:   board.NewBitboard(board.E1),
+		WhiteQueen:  board.NewBitboard(board.D1),
+		WhiteBishop: board.NewBitboard(board.C1, board.F1),
+		WhiteKnight: board.NewBitboard(board.B1, board.G1),
+		WhiteRook:   board.NewBitboard(board.A1, board.H1),
+		WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+		BlackKing:   board.NewBitboard(board.E8),
+		BlackQueen:  board.NewBitboard(board.D8),
+		BlackBishop: board.NewBitboard(board.C8, board.F8),
+		BlackKnight: board.NewBitboard(board.B8, board.G8),
+		BlackRook:   board.NewBitboard(board.A8, board.H8),
+		BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 	},
 	"rnbqkbnr/ppp1pppp/3p4/8/4P3/8/PPPP1PPP/RNBQKBNR": {
-		WhiteKing:   NewBitboard(E1),
-		WhiteQueen:  NewBitboard(D1),
-		WhiteBishop: NewBitboard(C1, F1),
-		WhiteKnight: NewBitboard(B1, G1),
-		WhiteRook:   NewBitboard(A1, H1),
-		WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-		BlackKing:   NewBitboard(E8),
-		BlackQueen:  NewBitboard(D8),
-		BlackBishop: NewBitboard(C8, F8),
-		BlackKnight: NewBitboard(B8, G8),
-		BlackRook:   NewBitboard(A8, H8),
-		BlackPawn:   NewBitboard(A7, B7, C7, D6, E7, F7, G7, H7),
+		WhiteKing:   board.NewBitboard(board.E1),
+		WhiteQueen:  board.NewBitboard(board.D1),
+		WhiteBishop: board.NewBitboard(board.C1, board.F1),
+		WhiteKnight: board.NewBitboard(board.B1, board.G1),
+		WhiteRook:   board.NewBitboard(board.A1, board.H1),
+		WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+		BlackKing:   board.NewBitboard(board.E8),
+		BlackQueen:  board.NewBitboard(board.D8),
+		BlackBishop: board.NewBitboard(board.C8, board.F8),
+		BlackKnight: board.NewBitboard(board.B8, board.G8),
+		BlackRook:   board.NewBitboard(board.A8, board.H8),
+		BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D6, board.E7, board.F7, board.G7, board.H7),
 	},
 }
 
@@ -62,18 +57,18 @@ var validPiecePositions = map[string]PiecePositions{
 var validFenstrings = map[string]Position{
 	"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E2, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E2, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      WHITE,
 		CastlingRights:  0 ^ (WhiteKingSideAllowed | WhiteQueenSideAllowed | BlackKingSideAllowed | BlackQueenSideAllowed),
@@ -83,18 +78,18 @@ var validFenstrings = map[string]Position{
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0 ^ (WhiteKingSideAllowed | WhiteQueenSideAllowed | BlackKingSideAllowed | BlackQueenSideAllowed),
@@ -104,337 +99,337 @@ var validFenstrings = map[string]Position{
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - A3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: A3,
+		EnPassantTarget: board.A3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - B3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: B3,
+		EnPassantTarget: board.B3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - C3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: C3,
+		EnPassantTarget: board.C3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - D3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: D3,
+		EnPassantTarget: board.D3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - E3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: E3,
+		EnPassantTarget: board.E3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - F3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: F3,
+		EnPassantTarget: board.F3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - G3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: G3,
+		EnPassantTarget: board.G3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H3 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: H3,
+		EnPassantTarget: board.H3,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - A6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: A6,
+		EnPassantTarget: board.A6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - B6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: B6,
+		EnPassantTarget: board.B6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - C6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: C6,
+		EnPassantTarget: board.C6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - D6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: D6,
+		EnPassantTarget: board.D6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - E6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: E6,
+		EnPassantTarget: board.E6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - F6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: F6,
+		EnPassantTarget: board.F6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - G6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: G6,
+		EnPassantTarget: board.G6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4": {
 		Pieces: &PiecePositions{
-			WhiteKing:   NewBitboard(E1),
-			WhiteQueen:  NewBitboard(D1),
-			WhiteBishop: NewBitboard(C1, F1),
-			WhiteKnight: NewBitboard(B1, G1),
-			WhiteRook:   NewBitboard(A1, H1),
-			WhitePawn:   NewBitboard(A2, B2, C2, D2, E4, F2, G2, H2),
-			BlackKing:   NewBitboard(E8),
-			BlackQueen:  NewBitboard(D8),
-			BlackBishop: NewBitboard(C8, F8),
-			BlackKnight: NewBitboard(B8, G8),
-			BlackRook:   NewBitboard(A8, H8),
-			BlackPawn:   NewBitboard(A7, B7, C7, D7, E7, F7, G7, H7),
+			WhiteKing:   board.NewBitboard(board.E1),
+			WhiteQueen:  board.NewBitboard(board.D1),
+			WhiteBishop: board.NewBitboard(board.C1, board.F1),
+			WhiteKnight: board.NewBitboard(board.B1, board.G1),
+			WhiteRook:   board.NewBitboard(board.A1, board.H1),
+			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:   board.NewBitboard(board.E8),
+			BlackQueen:  board.NewBitboard(board.D8),
+			BlackBishop: board.NewBitboard(board.C8, board.F8),
+			BlackKnight: board.NewBitboard(board.B8, board.G8),
+			BlackRook:   board.NewBitboard(board.A8, board.H8),
+			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
-		EnPassantTarget: H6,
+		EnPassantTarget: board.H6,
 		HalfmoveClock:   4,
 		FullMoveCounter: 4,
 	},
@@ -496,269 +491,79 @@ var invalidFenstrings = map[string]error{
 }
 
 // nolint:funlen // convey testing is verbose
-func TestConstants(t *testing.T) {
-	if DEBUG == true {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	} else {
-		zerolog.SetGlobalLevel(zerolog.Disabled)
-	}
-
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
-	Convey("Constants Set Correctly", t, func() {
-		So(A1, ShouldEqual, Square(1))
-		So(B1, ShouldEqual, Square(1<<1))
-		So(C1, ShouldEqual, Square(1<<2))
-		So(D1, ShouldEqual, Square(1<<3))
-		So(E1, ShouldEqual, Square(1<<4))
-		So(F1, ShouldEqual, Square(1<<5))
-		So(G1, ShouldEqual, Square(1<<6))
-		So(H1, ShouldEqual, Square(1<<7))
-		So(A2, ShouldEqual, Square(1<<8))
-		So(B2, ShouldEqual, Square(1<<9))
-		So(C2, ShouldEqual, Square(1<<10))
-		So(D2, ShouldEqual, Square(1<<11))
-		So(E2, ShouldEqual, Square(1<<12))
-		So(F2, ShouldEqual, Square(1<<13))
-		So(G2, ShouldEqual, Square(1<<14))
-		So(H2, ShouldEqual, Square(1<<15))
-		So(A3, ShouldEqual, Square(1<<16))
-		So(B3, ShouldEqual, Square(1<<17))
-		So(C3, ShouldEqual, Square(1<<18))
-		So(D3, ShouldEqual, Square(1<<19))
-		So(E3, ShouldEqual, Square(1<<20))
-		So(F3, ShouldEqual, Square(1<<21))
-		So(G3, ShouldEqual, Square(1<<22))
-		So(H3, ShouldEqual, Square(1<<23))
-		So(A4, ShouldEqual, Square(1<<24))
-		So(B4, ShouldEqual, Square(1<<25))
-		So(C4, ShouldEqual, Square(1<<26))
-		So(D4, ShouldEqual, Square(1<<27))
-		So(E4, ShouldEqual, Square(1<<28))
-		So(F4, ShouldEqual, Square(1<<29))
-		So(G4, ShouldEqual, Square(1<<30))
-		So(H4, ShouldEqual, Square(1<<31))
-		So(A5, ShouldEqual, Square(1<<32))
-		So(B5, ShouldEqual, Square(1<<33))
-		So(C5, ShouldEqual, Square(1<<34))
-		So(D5, ShouldEqual, Square(1<<35))
-		So(E5, ShouldEqual, Square(1<<36))
-		So(F5, ShouldEqual, Square(1<<37))
-		So(G5, ShouldEqual, Square(1<<38))
-		So(H5, ShouldEqual, Square(1<<39))
-		So(A6, ShouldEqual, Square(1<<40))
-		So(B6, ShouldEqual, Square(1<<41))
-		So(C6, ShouldEqual, Square(1<<42))
-		So(D6, ShouldEqual, Square(1<<43))
-		So(E6, ShouldEqual, Square(1<<44))
-		So(F6, ShouldEqual, Square(1<<45))
-		So(G6, ShouldEqual, Square(1<<46))
-		So(H6, ShouldEqual, Square(1<<47))
-		So(A7, ShouldEqual, Square(1<<48))
-		So(B7, ShouldEqual, Square(1<<49))
-		So(C7, ShouldEqual, Square(1<<50))
-		So(D7, ShouldEqual, Square(1<<51))
-		So(E7, ShouldEqual, Square(1<<52))
-		So(F7, ShouldEqual, Square(1<<53))
-		So(G7, ShouldEqual, Square(1<<54))
-		So(H7, ShouldEqual, Square(1<<55))
-		So(A8, ShouldEqual, Square(1<<56))
-		So(B8, ShouldEqual, Square(1<<57))
-		So(C8, ShouldEqual, Square(1<<58))
-		So(D8, ShouldEqual, Square(1<<59))
-		So(E8, ShouldEqual, Square(1<<60))
-		So(F8, ShouldEqual, Square(1<<61))
-		So(G8, ShouldEqual, Square(1<<62))
-		So(H8, ShouldEqual, Square(1<<63))
-	})
-}
-
-func TestSquare(t *testing.T) {
-	Convey("Given a Square type", t, func() {
-		// nolint:dupl // the Rank() and File() tests *could* be the same
-		// function but I prefer them separate for clarity.
-		Convey("It should have a File() method that reveals which file the square is in", func() {
-			testCases := map[Square]uint8{
-				A1: 1, A2: 1, A3: 1, A4: 1, A5: 1, A6: 1, A7: 1, A8: 1,
-				B1: 2, B2: 2, B3: 2, B4: 2, B5: 2, B6: 2, B7: 2, B8: 2,
-				C1: 3, C2: 3, C3: 3, C4: 3, C5: 3, C6: 3, C7: 3, C8: 3,
-				D1: 4, D2: 4, D3: 4, D4: 4, D5: 4, D6: 4, D7: 4, D8: 4,
-				E1: 5, E2: 5, E3: 5, E4: 5, E5: 5, E6: 5, E7: 5, E8: 5,
-				F1: 6, F2: 6, F3: 6, F4: 6, F5: 6, F6: 6, F7: 6, F8: 6,
-				G1: 7, G2: 7, G3: 7, G4: 7, G5: 7, G6: 7, G7: 7, G8: 7,
-				H1: 8, H2: 8, H3: 8, H4: 8, H5: 8, H6: 8, H7: 8, H8: 8,
-			}
-			for sqr, expectedFile := range testCases {
-				So(sqr.File(), ShouldEqual, expectedFile)
-				So(sqr.File(), ShouldBeLessThan, expectedFile+1)
-				So(sqr.File(), ShouldBeGreaterThan, expectedFile-1)
-			}
-		})
-		// nolint:dupl // the Rank() and File() tests *could* be the same
-		// function but I prefer them separate for clarity.
-		Convey("It should have a Rank() method that reveals which rank the square is in", func() {
-			testCases := map[Square]uint8{
-				A1: 1, A2: 2, A3: 3, A4: 4, A5: 5, A6: 6, A7: 7, A8: 8,
-				B1: 1, B2: 2, B3: 3, B4: 4, B5: 5, B6: 6, B7: 7, B8: 8,
-				C1: 1, C2: 2, C3: 3, C4: 4, C5: 5, C6: 6, C7: 7, C8: 8,
-				D1: 1, D2: 2, D3: 3, D4: 4, D5: 5, D6: 6, D7: 7, D8: 8,
-				E1: 1, E2: 2, E3: 3, E4: 4, E5: 5, E6: 6, E7: 7, E8: 8,
-				F1: 1, F2: 2, F3: 3, F4: 4, F5: 5, F6: 6, F7: 7, F8: 8,
-				G1: 1, G2: 2, G3: 3, G4: 4, G5: 5, G6: 6, G7: 7, G8: 8,
-				H1: 1, H2: 2, H3: 3, H4: 4, H5: 5, H6: 6, H7: 7, H8: 8,
-			}
-			for sqr, expectedRank := range testCases {
-				So(sqr.Rank(), ShouldEqual, expectedRank)
-				So(sqr.Rank(), ShouldBeLessThan, expectedRank+1)
-				So(sqr.Rank(), ShouldBeGreaterThan, expectedRank-1)
-			}
-		})
-	})
-}
-
-// nolint:funlen // convey testing is verbose
-func TestBitboard(t *testing.T) {
-	Convey("Given a NewBitboard function", t, func() {
-		Convey("With no arguments", func() {
-			Convey("It should return an empty board", func() {
-				bb := NewBitboard()
-				So(*bb, ShouldResemble, BITBOARD{})
-				So(bb.board, ShouldEqual, 0)
-			})
-
-			Convey("With args", func() {
-				Convey("It should return an initialised board", func() {
-					bitBoard := NewBitboard(A8)
-					So(bitBoard.board, ShouldEqual, A8)
-					bitBoard = NewBitboard(E3)
-					So(bitBoard.board, ShouldEqual, E3)
-					bitBoard = NewBitboard(A2, B2)
-					So(bitBoard.board, ShouldEqual, A2+B2)
-					bitBoard = NewBitboard(A8, H1)
-					So(bitBoard.board, ShouldEqual, A8+H1)
-				})
-			})
-		})
-	})
-	Convey("Given an existing BitBoard", t, func() {
-		bitboard := NewBitboard()
-		Convey("Bit manipulation basics", func() {
-			So(0^(1<<0), ShouldEqual, 1)
-		})
-		Convey("When FlipBit method called", func() {
-			Convey("It should update its board attribute", func() {
-				So(bitboard.board, ShouldEqual, 0)
-				for _, sqr := range allSquares {
-					bb := NewBitboard()
-					So(bb.board, ShouldEqual, 0)
-					bb.FlipBit(sqr)
-					So(bb.board, ShouldEqual, sqr)
-				}
-			})
-		})
-		Convey("When Squares() method called returns list strings where bits are 1", func() {
-			So(bitboard.Squares(), ShouldResemble, []string{})
-			bitboard.FlipBit(A8)
-			So(bitboard.Squares(), ShouldHaveLength, 1)
-			So(bitboard.Squares(), ShouldContain, "A8")
-			bitboard.FlipBit(H3)
-			bitboard.FlipBit(H4)
-			So(bitboard.Squares(), ShouldHaveLength, 3)
-			So(bitboard.Squares(), ShouldContain, "A8")
-			So(bitboard.Squares(), ShouldContain, "H4")
-			So(bitboard.Squares(), ShouldContain, "H3")
-		})
-
-		Convey("When Occupied() method called with square, returns true if square occupied", func() {
-			for _, sqr := range allSquares {
-				So(bitboard.Occupied(sqr), ShouldEqual, false)
-			}
-			bitboard.FlipBit(B4)
-			So(bitboard.Occupied(B4), ShouldEqual, true)
-			bitboard.FlipBit(A8)
-			So(bitboard.Occupied(B4), ShouldEqual, true)
-			So(bitboard.Occupied(A8), ShouldEqual, true)
-			So(bitboard.Occupied(H7), ShouldEqual, false)
-			bitboard.FlipBit(H7)
-			So(bitboard.Occupied(H7), ShouldEqual, true)
-		})
-	})
-}
-
-// nolint:funlen // convey testing is verbose
 func TestPiecePositions(t *testing.T) {
 	Convey("Given a PiecePositions struct", t, func() {
 		pieces := NewPiecePositions()
 		Convey("It should have BITBOARD fields for all types of piece", func() {
-			So(pieces.WhiteKing, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.WhiteQueen, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.WhiteKnight, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.WhiteBishop, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.WhiteRook, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.WhitePawn, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.BlackKing, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.BlackQueen, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.BlackKnight, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.BlackBishop, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.BlackRook, ShouldHaveSameTypeAs, &BITBOARD{})
-			So(pieces.BlackPawn, ShouldHaveSameTypeAs, &BITBOARD{})
+			So(pieces.WhiteKing, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.WhiteQueen, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.WhiteKnight, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.WhiteBishop, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.WhiteRook, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.WhitePawn, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.BlackKing, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.BlackQueen, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.BlackKnight, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.BlackBishop, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.BlackRook, ShouldHaveSameTypeAs, &board.BitBoard{})
+			So(pieces.BlackPawn, ShouldHaveSameTypeAs, &board.BitBoard{})
 		})
 		Convey("the Occupied() method should return true if any piece is in square", func() {
-			for _, sqr := range allSquares {
+			for _, sqr := range board.AllSquares {
 				So(pieces.Occupied(sqr), ShouldEqual, false)
 			}
-			pieces.BlackBishop.FlipBit(A8)
-			So(pieces.Occupied(A8), ShouldEqual, true)
-			pieces.WhiteQueen.FlipBit(E5)
-			So(pieces.Occupied(E5), ShouldEqual, true)
-			pieces.WhiteQueen.FlipBit(H1)
-			So(pieces.Occupied(H1), ShouldEqual, true)
+			pieces.BlackBishop.FlipBit(board.A8)
+			So(pieces.Occupied(board.A8), ShouldEqual, true)
+			pieces.WhiteQueen.FlipBit(board.E5)
+			So(pieces.Occupied(board.E5), ShouldEqual, true)
+			pieces.WhiteQueen.FlipBit(board.H1)
+			So(pieces.Occupied(board.H1), ShouldEqual, true)
 		})
 		Convey("the OccupiedBy() method should return which Piece is occupying the square", func() {
-			pieces.BlackBishop.FlipBit(A8)
-			So(pieces.OccupiedBy(A8), ShouldEqual, "b")
-			pieces.BlackBishop.FlipBit(F3)
-			So(pieces.OccupiedBy(F3), ShouldEqual, "b")
-			pieces.WhiteQueen.FlipBit(H3)
-			So(pieces.OccupiedBy(H3), ShouldEqual, "Q")
-			pieces.WhiteRook.FlipBit(H1)
-			So(pieces.OccupiedBy(H1), ShouldEqual, "R")
+			pieces.BlackBishop.FlipBit(board.A8)
+			So(pieces.OccupiedBy(board.A8), ShouldEqual, "b")
+			pieces.BlackBishop.FlipBit(board.F3)
+			So(pieces.OccupiedBy(board.F3), ShouldEqual, "b")
+			pieces.WhiteQueen.FlipBit(board.H3)
+			So(pieces.OccupiedBy(board.H3), ShouldEqual, "Q")
+			pieces.WhiteRook.FlipBit(board.H1)
+			So(pieces.OccupiedBy(board.H1), ShouldEqual, "R")
 		})
 		Convey("the String() method returns the string representation of the pieces ala fen notation", func() {
 			pieces := NewPiecePositions()
 			So(pieces.String(), ShouldEqual, "8/8/8/8/8/8/8/8")
-			pieces.BlackRook.FlipBit(A8)
-			pieces.BlackKnight.FlipBit(B8)
-			pieces.BlackBishop.FlipBit(C8)
-			pieces.BlackQueen.FlipBit(D8)
-			pieces.BlackKing.FlipBit(E8)
-			pieces.BlackBishop.FlipBit(F8)
-			pieces.BlackKnight.FlipBit(G8)
-			pieces.BlackRook.FlipBit(H8)
-			pieces.BlackPawn.FlipBit(A7)
-			pieces.BlackPawn.FlipBit(B7)
-			pieces.BlackPawn.FlipBit(C7)
-			pieces.BlackPawn.FlipBit(D7)
-			pieces.BlackPawn.FlipBit(E7)
-			pieces.BlackPawn.FlipBit(F7)
-			pieces.BlackPawn.FlipBit(G7)
-			pieces.BlackPawn.FlipBit(H7)
-			pieces.WhitePawn.FlipBit(A2)
-			pieces.WhitePawn.FlipBit(B2)
-			pieces.WhitePawn.FlipBit(C2)
-			pieces.WhitePawn.FlipBit(D2)
-			pieces.WhitePawn.FlipBit(E2)
-			pieces.WhitePawn.FlipBit(F2)
-			pieces.WhitePawn.FlipBit(G2)
-			pieces.WhitePawn.FlipBit(H2)
-			pieces.WhiteRook.FlipBit(A1)
-			pieces.WhiteKnight.FlipBit(B1)
-			pieces.WhiteBishop.FlipBit(C1)
-			pieces.WhiteQueen.FlipBit(D1)
-			pieces.WhiteKing.FlipBit(E1)
-			pieces.WhiteBishop.FlipBit(F1)
-			pieces.WhiteKnight.FlipBit(G1)
-			pieces.WhiteRook.FlipBit(H1)
+			pieces.BlackRook.FlipBit(board.A8)
+			pieces.BlackKnight.FlipBit(board.B8)
+			pieces.BlackBishop.FlipBit(board.C8)
+			pieces.BlackQueen.FlipBit(board.D8)
+			pieces.BlackKing.FlipBit(board.E8)
+			pieces.BlackBishop.FlipBit(board.F8)
+			pieces.BlackKnight.FlipBit(board.G8)
+			pieces.BlackRook.FlipBit(board.H8)
+			pieces.BlackPawn.FlipBit(board.A7)
+			pieces.BlackPawn.FlipBit(board.B7)
+			pieces.BlackPawn.FlipBit(board.C7)
+			pieces.BlackPawn.FlipBit(board.D7)
+			pieces.BlackPawn.FlipBit(board.E7)
+			pieces.BlackPawn.FlipBit(board.F7)
+			pieces.BlackPawn.FlipBit(board.G7)
+			pieces.BlackPawn.FlipBit(board.H7)
+			pieces.WhitePawn.FlipBit(board.A2)
+			pieces.WhitePawn.FlipBit(board.B2)
+			pieces.WhitePawn.FlipBit(board.C2)
+			pieces.WhitePawn.FlipBit(board.D2)
+			pieces.WhitePawn.FlipBit(board.E2)
+			pieces.WhitePawn.FlipBit(board.F2)
+			pieces.WhitePawn.FlipBit(board.G2)
+			pieces.WhitePawn.FlipBit(board.H2)
+			pieces.WhiteRook.FlipBit(board.A1)
+			pieces.WhiteKnight.FlipBit(board.B1)
+			pieces.WhiteBishop.FlipBit(board.C1)
+			pieces.WhiteQueen.FlipBit(board.D1)
+			pieces.WhiteKing.FlipBit(board.E1)
+			pieces.WhiteBishop.FlipBit(board.F1)
+			pieces.WhiteKnight.FlipBit(board.G1)
+			pieces.WhiteRook.FlipBit(board.H1)
 			So(pieces.String(), ShouldEqual, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 		})
 		Convey("The setPieces method should update Pieces bitboards", func() {
@@ -802,32 +607,32 @@ func TestPosition(t *testing.T) {
 			}
 		})
 		Convey("The setEnPassantTarget method should update the EnPassantTarget field", func() {
-			enpassantTargets := map[string]Square{
+			enpassantTargets := map[string]board.Square{
 				"-":  0,
-				"A3": A3,
-				"B3": B3,
-				"C3": C3,
-				"D3": D3,
-				"E3": E3,
-				"F3": F3,
-				"G3": G3,
-				"H3": H3,
-				"A6": A6,
-				"B6": B6,
-				"C6": C6,
-				"D6": D6,
-				"E6": E6,
-				"F6": F6,
-				"G6": G6,
-				"H6": H6,
+				"A3": board.A3,
+				"B3": board.B3,
+				"C3": board.C3,
+				"D3": board.D3,
+				"E3": board.E3,
+				"F3": board.F3,
+				"G3": board.G3,
+				"H3": board.H3,
+				"A6": board.A6,
+				"B6": board.B6,
+				"C6": board.C6,
+				"D6": board.D6,
+				"E6": board.E6,
+				"F6": board.F6,
+				"G6": board.G6,
+				"H6": board.H6,
 			}
 			for target, expectedTarget := range enpassantTargets {
 				enpassantErr := pos.setEnPassantTarget(target)
 				So(enpassantErr, ShouldEqual, nil)
 				So(pos.EnPassantTarget, ShouldEqual, expectedTarget)
 			}
-			enpassantErr := pos.setEnPassantTarget("H1")
-			So(enpassantErr, ShouldResemble, &EnPassantTargetError{errTarget: "H1"})
+			enpassantErr := pos.setEnPassantTarget("board.H1")
+			So(enpassantErr, ShouldResemble, &EnPassantTargetError{errTarget: "board.H1"})
 		})
 		Convey("The setSideToMove method should update the side to move field", func() {
 			err := pos.setSideToMove("w")
