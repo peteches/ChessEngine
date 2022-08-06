@@ -9,67 +9,21 @@ import (
 )
 
 //nolint:gochecknoglobals // this is for testing purposes
-var validPiecePositions = map[string]PiecePositions{
-	"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR": {
-		WhiteKing:   board.NewBitboard(board.E1),
-		WhiteQueen:  board.NewBitboard(board.D1),
-		WhiteBishop: board.NewBitboard(board.C1, board.F1),
-		WhiteKnight: board.NewBitboard(board.B1, board.G1),
-		WhiteRook:   board.NewBitboard(board.A1, board.H1),
-		WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E2, board.F2, board.G2, board.H2),
-		BlackKing:   board.NewBitboard(board.E8),
-		BlackQueen:  board.NewBitboard(board.D8),
-		BlackBishop: board.NewBitboard(board.C8, board.F8),
-		BlackKnight: board.NewBitboard(board.B8, board.G8),
-		BlackRook:   board.NewBitboard(board.A8, board.H8),
-		BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
-	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR": {
-		WhiteKing:   board.NewBitboard(board.E1),
-		WhiteQueen:  board.NewBitboard(board.D1),
-		WhiteBishop: board.NewBitboard(board.C1, board.F1),
-		WhiteKnight: board.NewBitboard(board.B1, board.G1),
-		WhiteRook:   board.NewBitboard(board.A1, board.H1),
-		WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-		BlackKing:   board.NewBitboard(board.E8),
-		BlackQueen:  board.NewBitboard(board.D8),
-		BlackBishop: board.NewBitboard(board.C8, board.F8),
-		BlackKnight: board.NewBitboard(board.B8, board.G8),
-		BlackRook:   board.NewBitboard(board.A8, board.H8),
-		BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
-	},
-	"rnbqkbnr/ppp1pppp/3p4/8/4P3/8/PPPP1PPP/RNBQKBNR": {
-		WhiteKing:   board.NewBitboard(board.E1),
-		WhiteQueen:  board.NewBitboard(board.D1),
-		WhiteBishop: board.NewBitboard(board.C1, board.F1),
-		WhiteKnight: board.NewBitboard(board.B1, board.G1),
-		WhiteRook:   board.NewBitboard(board.A1, board.H1),
-		WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-		BlackKing:   board.NewBitboard(board.E8),
-		BlackQueen:  board.NewBitboard(board.D8),
-		BlackBishop: board.NewBitboard(board.C8, board.F8),
-		BlackKnight: board.NewBitboard(board.B8, board.G8),
-		BlackRook:   board.NewBitboard(board.A8, board.H8),
-		BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D6, board.E7, board.F7, board.G7, board.H7),
-	},
-}
-
-//nolint:gochecknoglobals // this is for testing purposes
 var validFenstrings = map[string]Position{
 	"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E2, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E2, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      WHITE,
 		CastlingRights:  0 ^ (WhiteKingSideAllowed | WhiteQueenSideAllowed | BlackKingSideAllowed | BlackQueenSideAllowed),
@@ -78,19 +32,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 1,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0 ^ (WhiteKingSideAllowed | WhiteQueenSideAllowed | BlackKingSideAllowed | BlackQueenSideAllowed),
@@ -99,19 +53,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 1,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - A3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -120,19 +74,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - B3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -141,19 +95,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - C3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -162,19 +116,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - D3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -183,19 +137,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - E3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -204,19 +158,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - F3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -225,19 +179,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - G3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -246,19 +200,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H3 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -267,19 +221,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - A6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -288,19 +242,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - B6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -309,19 +263,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - C6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -330,19 +284,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - D6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -351,19 +305,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - E6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -372,19 +326,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - F6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -393,19 +347,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - G6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -414,19 +368,19 @@ var validFenstrings = map[string]Position{
 		FullMoveCounter: 4,
 	},
 	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4": {
-		Pieces: &PiecePositions{
-			WhiteKing:   board.NewBitboard(board.E1),
-			WhiteQueen:  board.NewBitboard(board.D1),
-			WhiteBishop: board.NewBitboard(board.C1, board.F1),
-			WhiteKnight: board.NewBitboard(board.B1, board.G1),
-			WhiteRook:   board.NewBitboard(board.A1, board.H1),
-			WhitePawn:   board.NewBitboard(board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
-			BlackKing:   board.NewBitboard(board.E8),
-			BlackQueen:  board.NewBitboard(board.D8),
-			BlackBishop: board.NewBitboard(board.C8, board.F8),
-			BlackKnight: board.NewBitboard(board.B8, board.G8),
-			BlackRook:   board.NewBitboard(board.A8, board.H8),
-			BlackPawn:   board.NewBitboard(board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
+		Board: &board.Board{
+			WhiteKing:    board.NewKing(board.White, board.E1),
+			WhiteQueens:  board.NewQueens(board.White, board.D1),
+			WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
+			WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
+			WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
+			WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
+			BlackKing:    board.NewKing(board.Black, board.E8),
+			BlackQueens:  board.NewQueens(board.Black, board.D8),
+			BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
+			BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
+			BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
+			BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 		},
 		SideToMove:      BLACK,
 		CastlingRights:  0,
@@ -491,92 +445,6 @@ var invalidFenstrings = map[string]error{
 	},
 }
 
-//nolint:funlen // convey testing is verbose
-func TestPiecePositions(t *testing.T) {
-	Convey("Given a PiecePositions struct", t, func() {
-		pieces := NewPiecePositions()
-		Convey("It should have BITBOARD fields for all types of piece", func() {
-			So(pieces.WhiteKing, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.WhiteQueen, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.WhiteKnight, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.WhiteBishop, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.WhiteRook, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.WhitePawn, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.BlackKing, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.BlackQueen, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.BlackKnight, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.BlackBishop, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.BlackRook, ShouldHaveSameTypeAs, &board.BitBoard{})
-			So(pieces.BlackPawn, ShouldHaveSameTypeAs, &board.BitBoard{})
-		})
-		Convey("the Occupied() method should return true if any piece is in square", func() {
-			for _, sqr := range board.AllSquares {
-				So(pieces.Occupied(sqr), ShouldEqual, false)
-			}
-			pieces.BlackBishop.FlipBit(board.A8)
-			So(pieces.Occupied(board.A8), ShouldEqual, true)
-			pieces.WhiteQueen.FlipBit(board.E5)
-			So(pieces.Occupied(board.E5), ShouldEqual, true)
-			pieces.WhiteQueen.FlipBit(board.H1)
-			So(pieces.Occupied(board.H1), ShouldEqual, true)
-		})
-		Convey("the OccupiedBy() method should return which Piece is occupying the square", func() {
-			pieces.BlackBishop.FlipBit(board.A8)
-			So(pieces.OccupiedBy(board.A8), ShouldEqual, "b")
-			pieces.BlackBishop.FlipBit(board.F3)
-			So(pieces.OccupiedBy(board.F3), ShouldEqual, "b")
-			pieces.WhiteQueen.FlipBit(board.H3)
-			So(pieces.OccupiedBy(board.H3), ShouldEqual, "Q")
-			pieces.WhiteRook.FlipBit(board.H1)
-			So(pieces.OccupiedBy(board.H1), ShouldEqual, "R")
-		})
-		Convey("the String() method returns the string representation of the pieces ala fen notation", func() {
-			pieces := NewPiecePositions()
-			So(pieces.String(), ShouldEqual, "8/8/8/8/8/8/8/8")
-			pieces.BlackRook.FlipBit(board.A8)
-			pieces.BlackKnight.FlipBit(board.B8)
-			pieces.BlackBishop.FlipBit(board.C8)
-			pieces.BlackQueen.FlipBit(board.D8)
-			pieces.BlackKing.FlipBit(board.E8)
-			pieces.BlackBishop.FlipBit(board.F8)
-			pieces.BlackKnight.FlipBit(board.G8)
-			pieces.BlackRook.FlipBit(board.H8)
-			pieces.BlackPawn.FlipBit(board.A7)
-			pieces.BlackPawn.FlipBit(board.B7)
-			pieces.BlackPawn.FlipBit(board.C7)
-			pieces.BlackPawn.FlipBit(board.D7)
-			pieces.BlackPawn.FlipBit(board.E7)
-			pieces.BlackPawn.FlipBit(board.F7)
-			pieces.BlackPawn.FlipBit(board.G7)
-			pieces.BlackPawn.FlipBit(board.H7)
-			pieces.WhitePawn.FlipBit(board.A2)
-			pieces.WhitePawn.FlipBit(board.B2)
-			pieces.WhitePawn.FlipBit(board.C2)
-			pieces.WhitePawn.FlipBit(board.D2)
-			pieces.WhitePawn.FlipBit(board.E2)
-			pieces.WhitePawn.FlipBit(board.F2)
-			pieces.WhitePawn.FlipBit(board.G2)
-			pieces.WhitePawn.FlipBit(board.H2)
-			pieces.WhiteRook.FlipBit(board.A1)
-			pieces.WhiteKnight.FlipBit(board.B1)
-			pieces.WhiteBishop.FlipBit(board.C1)
-			pieces.WhiteQueen.FlipBit(board.D1)
-			pieces.WhiteKing.FlipBit(board.E1)
-			pieces.WhiteBishop.FlipBit(board.F1)
-			pieces.WhiteKnight.FlipBit(board.G1)
-			pieces.WhiteRook.FlipBit(board.H1)
-			So(pieces.String(), ShouldEqual, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
-		})
-		Convey("The setPieces method should update Pieces bitboards", func() {
-			for piecePositions, expectedPiecePosition := range validPiecePositions {
-				err := pieces.setPieces(piecePositions)
-				So(err, ShouldEqual, nil)
-				So(*pieces, ShouldResemble, expectedPiecePosition)
-			}
-		})
-	})
-}
-
 //nolint:funlen // Convey testing is verbose
 func TestPosition(t *testing.T) {
 	Convey("Given a NewPosition", t, func() {
@@ -584,7 +452,7 @@ func TestPosition(t *testing.T) {
 		Convey("returns a NewPosition struct", func() {
 			So(pos, ShouldHaveSameTypeAs, &Position{})
 			So(pos, ShouldResemble, &Position{
-				Pieces:          NewPiecePositions(),
+				Board:           board.NewBoard(),
 				SideToMove:      WHITE,
 				CastlingRights:  0,
 				EnPassantTarget: 0,

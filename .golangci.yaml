@@ -9,6 +9,8 @@ linters:
     - scopelint
     - maligned
     - golint
+    - nolintlint
+    - lll
 linter-settings:
   misspell:
     locale: en_GB
@@ -18,5 +20,6 @@ issues:
       linters:
         - gocyclo
         - dupl
+        - funlen
 
 

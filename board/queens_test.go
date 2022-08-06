@@ -16,8 +16,8 @@ func TestQueens(t *testing.T) {
 			So(queen.Colour, ShouldHaveSameTypeAs, testSide)
 		})
 		Convey("It should implement the Piece interface", func() {
-			bQueen := board.NewQueen(board.Black)
-			wQueen := board.NewQueen(board.White)
+			bQueen := board.NewQueens(board.Black)
+			wQueen := board.NewQueens(board.White)
 			Convey("By returning the appropriate string representation of the piece", func() {
 				So(bQueen.String(), ShouldEqual, "q")
 				So(wQueen.String(), ShouldEqual, "Q")
@@ -33,11 +33,11 @@ func TestQueens(t *testing.T) {
 	})
 	Convey("Given a NewQueen() function", t, func() {
 		Convey("It should accept a side", func() {
-			queen := board.NewQueen(board.Black)
+			queen := board.NewQueens(board.Black)
 			So(*queen, ShouldResemble, board.Queens{board.NewBitboard(), board.Black})
 		})
 		Convey("It should Optionally accept any number of Squares to initialise the position", func() {
-			queen := board.NewQueen(board.Black, board.D8, board.A1)
+			queen := board.NewQueens(board.Black, board.D8, board.A1)
 			So(*queen, ShouldResemble, board.Queens{board.NewBitboard(board.D8, board.A1), board.Black})
 		})
 	})

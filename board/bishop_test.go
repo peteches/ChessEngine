@@ -16,8 +16,8 @@ func TestBishops(t *testing.T) {
 			So(bishop.Colour, ShouldHaveSameTypeAs, testSide)
 		})
 		Convey("It should implement the Piece interface", func() {
-			bBishop := board.NewBishop(board.Black)
-			wBishop := board.NewBishop(board.White)
+			bBishop := board.NewBishops(board.Black)
+			wBishop := board.NewBishops(board.White)
 			Convey("By returning the appropriate string representation of the piece", func() {
 				So(bBishop.String(), ShouldEqual, "b")
 				So(wBishop.String(), ShouldEqual, "B")
@@ -33,11 +33,11 @@ func TestBishops(t *testing.T) {
 	})
 	Convey("Given a NewBishop() function", t, func() {
 		Convey("It should accept a side", func() {
-			bishop := board.NewBishop(board.Black)
+			bishop := board.NewBishops(board.Black)
 			So(*bishop, ShouldResemble, board.Bishops{board.NewBitboard(), board.Black})
 		})
 		Convey("It should Optionally accept any number of Squares to initialise the position", func() {
-			bishop := board.NewBishop(board.Black, board.D8, board.A1)
+			bishop := board.NewBishops(board.Black, board.D8, board.A1)
 			So(*bishop, ShouldResemble, board.Bishops{board.NewBitboard(board.D8, board.A1), board.Black})
 		})
 	})

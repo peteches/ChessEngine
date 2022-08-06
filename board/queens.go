@@ -9,7 +9,7 @@ type Queens struct {
 	Colour    Side
 }
 
-func NewQueen(colour Side, startingPosition ...Square) *Queens {
+func NewQueens(colour Side, startingPosition ...Square) *Queens {
 	queens := Queens{
 		Positions: NewBitboard(startingPosition...),
 		Colour:    colour,

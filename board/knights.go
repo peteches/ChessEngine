@@ -10,7 +10,7 @@ type Knights struct {
 	Colour    Side
 }
 
-func NewKnight(colour Side, startingPosition ...Square) *Knights {
+func NewKnights(colour Side, startingPosition ...Square) *Knights {
 	knights := Knights{
 		Positions: NewBitboard(startingPosition...),
 		Colour:    colour,

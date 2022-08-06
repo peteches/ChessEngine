@@ -9,7 +9,7 @@ type Rooks struct {
 	Colour    Side
 }
 
-func NewRook(colour Side, startingPosition ...Square) *Rooks {
+func NewRooks(colour Side, startingPosition ...Square) *Rooks {
 	rooks := Rooks{
 		Positions: NewBitboard(startingPosition...),
 		Colour:    colour,

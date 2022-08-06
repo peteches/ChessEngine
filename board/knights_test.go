@@ -16,8 +16,8 @@ func TestKnights(t *testing.T) {
 			So(knight.Colour, ShouldHaveSameTypeAs, testSide)
 		})
 		Convey("It should implement the Piece interface", func() {
-			bKnight := board.NewKnight(board.Black)
-			wKnight := board.NewKnight(board.White)
+			bKnight := board.NewKnights(board.Black)
+			wKnight := board.NewKnights(board.White)
 			Convey("By returning the appropriate string representation of the piece", func() {
 				So(bKnight.String(), ShouldEqual, "n")
 				So(wKnight.String(), ShouldEqual, "N")
@@ -33,11 +33,11 @@ func TestKnights(t *testing.T) {
 	})
 	Convey("Given a NewKnight() function", t, func() {
 		Convey("It should accept a side", func() {
-			knight := board.NewKnight(board.Black)
+			knight := board.NewKnights(board.Black)
 			So(*knight, ShouldResemble, board.Knights{board.NewBitboard(), board.Black})
 		})
 		Convey("It should Optionally accept any number of Squares to initialise the position", func() {
-			knight := board.NewKnight(board.Black, board.D8, board.A1)
+			knight := board.NewKnights(board.Black, board.D8, board.A1)
 			So(*knight, ShouldResemble, board.Knights{board.NewBitboard(board.D8, board.A1), board.Black})
 		})
 	})

@@ -10,7 +10,7 @@ type Bishops struct {
 	Colour    Side
 }
 
-func NewBishop(colour Side, startingPosition ...Square) *Bishops {
+func NewBishops(colour Side, startingPosition ...Square) *Bishops {
 	bishops := Bishops{
 		Positions: NewBitboard(startingPosition...),
 		Colour:    colour,

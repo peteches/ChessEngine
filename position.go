@@ -24,248 +24,13 @@ const (
 	BlackQueenSideAllowed = 8
 )
 
-type PiecePositions struct {
-	WhiteKing   *board.BitBoard
-	WhiteQueen  *board.BitBoard
-	WhiteBishop *board.BitBoard
-	WhiteKnight *board.BitBoard
-	WhiteRook   *board.BitBoard
-	WhitePawn   *board.BitBoard
-	BlackKing   *board.BitBoard
-	BlackQueen  *board.BitBoard
-	BlackBishop *board.BitBoard
-	BlackKnight *board.BitBoard
-	BlackRook   *board.BitBoard
-	BlackPawn   *board.BitBoard
-}
-
-func NewPiecePositions() *PiecePositions {
-	return &PiecePositions{
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-		board.NewBitboard(),
-	}
-}
-
-//nolint:cyclop // not sure how to simplify this further
-func (p *PiecePositions) Occupied(sqr board.Square) bool {
-	return p.WhiteKing.Occupied(sqr) ||
-		p.WhiteQueen.Occupied(sqr) ||
-		p.WhiteBishop.Occupied(sqr) ||
-		p.WhiteKnight.Occupied(sqr) ||
-		p.WhiteRook.Occupied(sqr) ||
-		p.WhitePawn.Occupied(sqr) ||
-		p.BlackKing.Occupied(sqr) ||
-		p.BlackQueen.Occupied(sqr) ||
-		p.BlackBishop.Occupied(sqr) ||
-		p.BlackKnight.Occupied(sqr) ||
-		p.BlackRook.Occupied(sqr) ||
-		p.BlackPawn.Occupied(sqr)
-}
-
-//nolint:cyclop // not sure how to simplify this further
-func (p *PiecePositions) OccupiedBy(sqr board.Square) string {
-	if !p.Occupied(sqr) {
-		return ""
-	}
-
-	if p.WhiteKing.Occupied(sqr) {
-		return "K"
-	}
-
-	if p.WhiteQueen.Occupied(sqr) {
-		return "Q"
-	}
-
-	if p.WhiteBishop.Occupied(sqr) {
-		return "B"
-	}
-
-	if p.WhiteKnight.Occupied(sqr) {
-		return "N"
-	}
-
-	if p.WhiteRook.Occupied(sqr) {
-		return "R"
-	}
-
-	if p.WhitePawn.Occupied(sqr) {
-		return "P"
-	}
-
-	if p.BlackKing.Occupied(sqr) {
-		return "k"
-	}
-
-	if p.BlackQueen.Occupied(sqr) {
-		return "q"
-	}
-
-	if p.BlackBishop.Occupied(sqr) {
-		return "b"
-	}
-
-	if p.BlackKnight.Occupied(sqr) {
-		return "n"
-	}
-
-	if p.BlackRook.Occupied(sqr) {
-		return "r"
-	}
-
-	if p.BlackPawn.Occupied(sqr) {
-		return "p"
-	}
-
-	return "Bla"
-}
-
-func (p *PiecePositions) String() string {
-	fen := ""
-	unoccupied := 0
-
-	for idx, sqr := range board.AllSquares {
-		if p.Occupied(sqr) {
-			if unoccupied > 0 {
-				fen += strconv.Itoa(unoccupied)
-				unoccupied = 0
-			}
-
-			fen += p.OccupiedBy(sqr)
-		} else {
-			unoccupied++
-		}
-
-		if (idx+1)%8 == 0 {
-			if unoccupied > 0 {
-				fen += strconv.Itoa(unoccupied)
-				unoccupied = 0
-			}
-
-			if (idx + 1) < board.TotalSquares {
-				fen += "/"
-			}
-		}
-	}
-
-	return fen
-}
-
 type Position struct {
-	Pieces          *PiecePositions
+	Board           *board.Board
 	EnPassantTarget board.Square
 	SideToMove      uint8
 	CastlingRights  uint8
 	HalfmoveClock   uint8
 	FullMoveCounter uint8
-}
-
-//nolint:funlen,cyclop
-func (p *PiecePositions) setPieces(pieces string) *errors.PiecePositionError {
-	// restet all positions
-	p.BlackRook.Board &= uint64(0)
-	p.BlackKnight.Board &= uint64(0)
-	p.BlackBishop.Board &= uint64(0)
-	p.BlackQueen.Board &= uint64(0)
-	p.BlackKing.Board &= uint64(0)
-	p.BlackPawn.Board &= uint64(0)
-	p.WhiteRook.Board &= uint64(0)
-	p.WhiteKnight.Board &= uint64(0)
-	p.WhiteBishop.Board &= uint64(0)
-	p.WhiteQueen.Board &= uint64(0)
-	p.WhiteKing.Board &= uint64(0)
-	p.WhitePawn.Board &= uint64(0)
-
-	offset := 0
-
-	// fen strings are odd. They move from A8-H8,A7-H7 etc.
-	// I want them to go A1-H1,A2-H2 etc. This then makes more sense when
-	// using the Constants A1-H8 where A1 is the smallest and H8 is the
-	// largest. Using fenstrings as is A8 is smaller than A1, which isn't
-	// very intuitive. This does mean I need to manipulate the fen string
-	// slightly to allow more intuitive BitBoards
-	pieceRanks := strings.Split(pieces, "/")
-	piecesSensibleOrder := ""
-
-	for i := 7; i >= 0; i-- {
-		piecesSensibleOrder += pieceRanks[i]
-	}
-
-	// this case statement pushes over the limit for funlen
-	// but is largely unavoidable. complexity in this function is as simple as can be made.
-	for index, pos := range piecesSensibleOrder {
-		switch pos {
-		case 'r':
-			{
-				p.BlackRook.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'n':
-			{
-				p.BlackKnight.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'b':
-			{
-				p.BlackBishop.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'q':
-			{
-				p.BlackQueen.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'k':
-			{
-				p.BlackKing.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'p':
-			{
-				p.BlackPawn.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'R':
-			{
-				p.WhiteRook.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'N':
-			{
-				p.WhiteKnight.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'B':
-			{
-				p.WhiteBishop.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'Q':
-			{
-				p.WhiteQueen.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'K':
-			{
-				p.WhiteKing.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case 'P':
-			{
-				p.WhitePawn.FlipBit(board.Square(1 << (index + offset)))
-			}
-		case '1', '2', '3', '4', '5', '6', '7', '8':
-			{
-				offset += (int(pos-'0') - 1)
-			}
-		default:
-			{
-				return &errors.PiecePositionError{
-					ErrPiece: pos,
-				}
-			}
-		}
-	}
-
-	return nil
 }
 
 func (p *Position) setSideToMove(side string) *errors.SideToMoveError {
@@ -374,7 +139,7 @@ func (p *Position) SetPositionFromFen(fen string) error {
 		}
 	}
 
-	pieceErr := p.Pieces.setPieces(fenElements[0])
+	pieceErr := p.Board.SetPieces(fenElements[0])
 	if pieceErr != nil {
 		pieceErr.Fen = fen
 
@@ -435,7 +200,7 @@ func (p *Position) SetPositionFromFen(fen string) error {
 func (p *Position) String() string {
 	fen := ""
 
-	fen += p.Pieces.String()
+	fen += p.Board.String()
 	fen += " "
 
 	switch p.SideToMove {
@@ -489,7 +254,7 @@ func (p *Position) IsValidMove(move *board.Move) bool {
 
 func NewPosition() *Position {
 	pos := Position{
-		Pieces:          NewPiecePositions(),
+		Board:           board.NewBoard(),
 		SideToMove:      WHITE,
 		CastlingRights:  0,
 		EnPassantTarget: 0,
