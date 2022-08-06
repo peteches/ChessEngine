@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/peteches/ChessEngine/board"
+	"github.com/peteches/ChessEngine/errors"
+	"github.com/peteches/ChessEngine/moves"
 )
 
 const numFenElements = 6
@@ -55,7 +57,7 @@ func NewPiecePositions() *PiecePositions {
 	}
 }
 
-// nolint:cyclop // not sure how to simplify this further
+//nolint:cyclop // not sure how to simplify this further
 func (p *PiecePositions) Occupied(sqr board.Square) bool {
 	return p.WhiteKing.Occupied(sqr) ||
 		p.WhiteQueen.Occupied(sqr) ||
@@ -71,7 +73,7 @@ func (p *PiecePositions) Occupied(sqr board.Square) bool {
 		p.BlackPawn.Occupied(sqr)
 }
 
-// nolint:cyclop // not sure how to simplify this further
+//nolint:cyclop // not sure how to simplify this further
 func (p *PiecePositions) OccupiedBy(sqr board.Square) string {
 	if !p.Occupied(sqr) {
 		return ""
@@ -168,10 +170,8 @@ type Position struct {
 	FullMoveCounter uint8
 }
 
-// nolint:funlen,cyclop // this case statement pushes over the limit but is largely
-// unavoidable.
-// complexity in this function is as simple as can be made.
-func (p *PiecePositions) setPieces(pieces string) *PiecePositionError {
+//nolint:funlen,cyclop
+func (p *PiecePositions) setPieces(pieces string) *errors.PiecePositionError {
 	// restet all positions
 	p.BlackRook.Board &= uint64(0)
 	p.BlackKnight.Board &= uint64(0)
@@ -201,6 +201,8 @@ func (p *PiecePositions) setPieces(pieces string) *PiecePositionError {
 		piecesSensibleOrder += pieceRanks[i]
 	}
 
+	// this case statement pushes over the limit for funlen
+	// but is largely unavoidable. complexity in this function is as simple as can be made.
 	for index, pos := range piecesSensibleOrder {
 		switch pos {
 		case 'r':
@@ -257,8 +259,8 @@ func (p *PiecePositions) setPieces(pieces string) *PiecePositionError {
 			}
 		default:
 			{
-				return &PiecePositionError{
-					errPiece: pos,
+				return &errors.PiecePositionError{
+					ErrPiece: pos,
 				}
 			}
 		}
@@ -267,7 +269,7 @@ func (p *PiecePositions) setPieces(pieces string) *PiecePositionError {
 	return nil
 }
 
-func (p *Position) setSideToMove(side string) *SideToMoveError {
+func (p *Position) setSideToMove(side string) *errors.SideToMoveError {
 	switch side {
 	case "w":
 		{
@@ -279,14 +281,14 @@ func (p *Position) setSideToMove(side string) *SideToMoveError {
 		}
 	default:
 		{
-			return &SideToMoveError{errSide: side}
+			return &errors.SideToMoveError{ErrSide: side}
 		}
 	}
 
 	return nil
 }
 
-func (p *Position) setCastlingRights(rights string) *CastlingRightsError {
+func (p *Position) setCastlingRights(rights string) *errors.CastlingRightsError {
 	var blackKingSide uint8
 
 	var blackQueenSide uint8
@@ -321,7 +323,7 @@ func (p *Position) setCastlingRights(rights string) *CastlingRightsError {
 			}
 		default:
 			{
-				return &CastlingRightsError{errChar: pos}
+				return &errors.CastlingRightsError{ErrChar: pos}
 			}
 		}
 	}
@@ -331,7 +333,7 @@ func (p *Position) setCastlingRights(rights string) *CastlingRightsError {
 	return nil
 }
 
-func (p *Position) setEnPassantTarget(targetSquare string) *EnPassantTargetError {
+func (p *Position) setEnPassantTarget(targetSquare string) *errors.EnPassantTargetError {
 	enPassantMatrix := map[string]board.Square{
 		"-":  0,
 		"A3": board.A3,
@@ -359,37 +361,37 @@ func (p *Position) setEnPassantTarget(targetSquare string) *EnPassantTargetError
 		return nil
 	}
 
-	return &EnPassantTargetError{errTarget: targetSquare}
+	return &errors.EnPassantTargetError{ErrTarget: targetSquare}
 }
 
-// nolint:funlen // Cannot really make this any simpler
+//nolint:funlen // Cannot really make this any simpler
 func (p *Position) SetPositionFromFen(fen string) error {
 	fenElements := strings.Split(fen, " ")
 
 	if len(fenElements) != numFenElements {
-		return &InvalidFenstringError{
-			fen: fen,
-			err: "Missing Fen elements",
+		return &errors.InvalidFenstringError{
+			Fen: fen,
+			Err: "Missing Fen elements",
 		}
 	}
 
 	pieceErr := p.Pieces.setPieces(fenElements[0])
 	if pieceErr != nil {
-		pieceErr.fen = fen
+		pieceErr.Fen = fen
 
 		return pieceErr
 	}
 
 	stmErr := p.setSideToMove(fenElements[1])
 	if stmErr != nil {
-		stmErr.fen = fen
+		stmErr.Fen = fen
 
 		return stmErr
 	}
 
 	castlingErr := p.setCastlingRights(fenElements[2])
 	if castlingErr != nil {
-		castlingErr.fen = fen
+		castlingErr.Fen = fen
 
 		return castlingErr
 	}
@@ -397,32 +399,32 @@ func (p *Position) SetPositionFromFen(fen string) error {
 	// Setting EnPassantTarget square
 	enPassantErr := p.setEnPassantTarget(fenElements[3])
 	if enPassantErr != nil {
-		enPassantErr.fen = fen
+		enPassantErr.Fen = fen
 
 		return enPassantErr
 	}
 
-	// nolint:gomnd // parse uint wants base and bits which arn't easily
+	//nolint:gomnd // parse uint wants base and bits which arn't easily
 	// derived
 	halfMoveClock, err := strconv.ParseUint(fenElements[4], 10, 8)
 	if err != nil {
-		return &HalfMoveClockError{
-			fen:           fen,
-			err:           err.Error(),
-			halfMoveClock: fenElements[4],
+		return &errors.HalfMoveClockError{
+			Fen:           fen,
+			Err:           err.Error(),
+			HalfMoveClock: fenElements[4],
 		}
 	}
 
 	p.HalfmoveClock = uint8(halfMoveClock)
 
-	// nolint:gomnd // parse uint wants base and bits which arn't easily
+	//nolint:gomnd // parse uint wants base and bits which arn't easily
 	// derived
 	halfMoveClock, err = strconv.ParseUint(fenElements[5], 10, 8)
 	if err != nil {
-		return &FullMoveCounterError{
-			fen:             fen,
-			err:             err.Error(),
-			fullMoveCounter: fenElements[5],
+		return &errors.FullMoveCounterError{
+			Fen:             fen,
+			Err:             err.Error(),
+			FullMoveCounter: fenElements[5],
 		}
 	}
 
@@ -482,7 +484,7 @@ func (p *Position) String() string {
 	return fen
 }
 
-func (p *Position) IsValidMove(move *Move) bool {
+func (p *Position) IsValidMove(move *moves.Move) bool {
 	return false
 }
 

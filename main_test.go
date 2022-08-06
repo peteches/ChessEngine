@@ -8,27 +8,25 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// nolint:gochecknoglobals // for testing this is fine
+//nolint:gochecknoglobals // for testing this is fine
 var uciOkMsg = `id name PetechesChessBot 0.0
 id author Pete 'Peteches' McCabe
 uciok
 `
 
 func TestUciInit(t *testing.T) {
-	ctx := context.Background()
-
 	Convey("Given a handleUci function", t, func() {
 		Convey("It should accept a context", func() {
 			So(func() {
-				handleUci(ctx)
+				handleUci()
 			}, ShouldNotPanic)
 		})
 		Convey("It will return a readonly channel ", func() {
-			outChan := handleUci(ctx)
+			outChan := handleUci()
 			So(outChan, ShouldHaveSameTypeAs, make(<-chan string))
 		})
 		Convey("It will write UCI info to the returned channel", func() {
-			outChan := handleUci(ctx)
+			outChan := handleUci()
 			out := ""
 			for x := range outChan {
 				out += x

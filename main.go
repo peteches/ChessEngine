@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func handleUci(ctx context.Context) <-chan string {
+func handleUci() <-chan string {
 	infoLines := []string{
 		"id name PetechesChessBot 0.0",
 		"id author Pete 'Peteches' McCabe",

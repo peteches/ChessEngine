@@ -4,10 +4,12 @@ import (
 	"testing"
 
 	"github.com/peteches/ChessEngine/board"
+	"github.com/peteches/ChessEngine/errors"
+	"github.com/peteches/ChessEngine/moves"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// nolint:gochecknoglobals // this is for testing purposes
+//nolint:gochecknoglobals // this is for testing purposes
 var validPiecePositions = map[string]PiecePositions{
 	"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR": {
 		WhiteKing:   board.NewBitboard(board.E1),
@@ -53,7 +55,7 @@ var validPiecePositions = map[string]PiecePositions{
 	},
 }
 
-// nolint:gochecknoglobals // this is for testing purposes
+//nolint:gochecknoglobals // this is for testing purposes
 var validFenstrings = map[string]Position{
 	"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1": {
 		Pieces: &PiecePositions{
@@ -435,62 +437,62 @@ var validFenstrings = map[string]Position{
 	},
 }
 
-// nolint:gochecknoglobals // this is for testing purposes
+//nolint:gochecknoglobals // this is for testing purposes
 var invalidFenstrings = map[string]error{
-	"rnbfkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4": &PiecePositionError{
-		fen:      "rnbfkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4",
-		errPiece: 'f',
+	"rnbfkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4": &errors.PiecePositionError{
+		Fen:      "rnbfkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4",
+		ErrPiece: 'f',
 	},
-	"rnbqkbnr/pppppppp/9/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4": &PiecePositionError{
-		fen:      "rnbqkbnr/pppppppp/9/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4",
-		errPiece: '9',
+	"rnbqkbnr/pppppppp/9/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4": &errors.PiecePositionError{
+		Fen:      "rnbqkbnr/pppppppp/9/8/4P3/8/PPPP1PPP/RNBQKBNR b - H6 4 4",
+		ErrPiece: '9',
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR x - H6 4 4": &SideToMoveError{
-		fen:     "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR x - H6 4 4",
-		errSide: "x",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR x - H6 4 4": &errors.SideToMoveError{
+		Fen:     "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR x - H6 4 4",
+		ErrSide: "x",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - H2 4 4": &EnPassantTargetError{
-		fen:       "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - H2 4 4",
-		errTarget: "H2",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - H2 4 4": &errors.EnPassantTargetError{
+		Fen:       "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - H2 4 4",
+		ErrTarget: "H2",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 e 4": &HalfMoveClockError{
-		fen:           "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 e 4",
-		halfMoveClock: "e",
-		err:           "strconv.ParseUint: parsing \"e\": invalid syntax",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 e 4": &errors.HalfMoveClockError{
+		Fen:           "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 e 4",
+		HalfMoveClock: "e",
+		Err:           "strconv.ParseUint: parsing \"e\": invalid syntax",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1 4": &HalfMoveClockError{
-		fen:           "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1 4",
-		halfMoveClock: "-1",
-		err:           "strconv.ParseUint: parsing \"-1\": invalid syntax",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1 4": &errors.HalfMoveClockError{
+		Fen:           "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1 4",
+		HalfMoveClock: "-1",
+		Err:           "strconv.ParseUint: parsing \"-1\": invalid syntax",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 1 -1": &FullMoveCounterError{
-		fen:             "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 1 -1",
-		fullMoveCounter: "-1",
-		err:             "strconv.ParseUint: parsing \"-1\": invalid syntax",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 1 -1": &errors.FullMoveCounterError{
+		Fen:             "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 1 -1",
+		FullMoveCounter: "-1",
+		Err:             "strconv.ParseUint: parsing \"-1\": invalid syntax",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR": &InvalidFenstringError{
-		fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
-		err: "Missing Fen elements",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR": &errors.InvalidFenstringError{
+		Fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
+		Err: "Missing Fen elements",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w": &InvalidFenstringError{
-		fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w",
-		err: "Missing Fen elements",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w": &errors.InvalidFenstringError{
+		Fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w",
+		Err: "Missing Fen elements",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w -": &InvalidFenstringError{
-		fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w -",
-		err: "Missing Fen elements",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w -": &errors.InvalidFenstringError{
+		Fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w -",
+		Err: "Missing Fen elements",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3": &InvalidFenstringError{
-		fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3",
-		err: "Missing Fen elements",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3": &errors.InvalidFenstringError{
+		Fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3",
+		Err: "Missing Fen elements",
 	},
-	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1": &InvalidFenstringError{
-		fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1",
-		err: "Missing Fen elements",
+	"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1": &errors.InvalidFenstringError{
+		Fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w - E3 -1",
+		Err: "Missing Fen elements",
 	},
 }
 
-// nolint:funlen // convey testing is verbose
+//nolint:funlen // convey testing is verbose
 func TestPiecePositions(t *testing.T) {
 	Convey("Given a PiecePositions struct", t, func() {
 		pieces := NewPiecePositions()
@@ -576,7 +578,7 @@ func TestPiecePositions(t *testing.T) {
 	})
 }
 
-// nolint:funlen // Convey testing is verbose
+//nolint:funlen // Convey testing is verbose
 func TestPosition(t *testing.T) {
 	Convey("Given a NewPosition", t, func() {
 		pos := NewPosition()
@@ -632,7 +634,7 @@ func TestPosition(t *testing.T) {
 				So(pos.EnPassantTarget, ShouldEqual, expectedTarget)
 			}
 			enpassantErr := pos.setEnPassantTarget("board.H1")
-			So(enpassantErr, ShouldResemble, &EnPassantTargetError{errTarget: "board.H1"})
+			So(enpassantErr, ShouldResemble, &errors.EnPassantTargetError{ErrTarget: "board.H1"})
 		})
 		Convey("The setSideToMove method should update the side to move field", func() {
 			err := pos.setSideToMove("w")
@@ -651,7 +653,7 @@ func TestPosition(t *testing.T) {
 					So(*pos, ShouldResemble, position)
 				}
 			})
-			Convey("Return a PositionError if given position is invalid", func() {
+			Convey("Return a errors.PositionError if given position is invalid", func() {
 				for fen, expectedErr := range invalidFenstrings {
 					pos := NewPosition()
 					err := pos.SetPositionFromFen(fen)
@@ -678,7 +680,7 @@ func TestPosition(t *testing.T) {
 					for move, moveIsValid := range v {
 						err := pos.SetPositionFromFen(startFen)
 						So(err, ShouldEqual, nil)
-						m, _ := NewMove(move)
+						m, _ := moves.NewMove(move)
 						So(pos.IsValidMove(m), ShouldEqual, moveIsValid)
 					}
 				}

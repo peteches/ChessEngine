@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// nolint:funlen,gocognit,cyclop // not sure how to simplify this yet
+//nolint:funlen,gocognit,cyclop // not sure how to simplify this yet
 func engine(ctx context.Context) (chan<- string, <-chan string, <-chan string) {
 	toEng := make(chan string)
 	frmEng := make(chan string)
@@ -35,7 +35,7 @@ func engine(ctx context.Context) (chan<- string, <-chan string, <-chan string) {
 					case "uci":
 						{
 							go func() {
-								o := handleUci(ctx)
+								o := handleUci()
 								for x := range o {
 									frmEng <- x
 								}

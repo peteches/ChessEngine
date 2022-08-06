@@ -9,7 +9,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// nolint:funlen,gocognit,cyclop // Convey testing is verbose
+//nolint:funlen,gocognit,cyclop // Convey testing is verbose
 func TestEngine(t *testing.T) {
 	Convey("Given an Engine Function", t, func() {
 		ctx := context.Background()
