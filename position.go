@@ -7,7 +7,6 @@ import (
 
 	"github.com/peteches/ChessEngine/board"
 	"github.com/peteches/ChessEngine/errors"
-	"github.com/peteches/ChessEngine/moves"
 )
 
 const numFenElements = 6
@@ -484,7 +483,7 @@ func (p *Position) String() string {
 	return fen
 }
 
-func (p *Position) IsValidMove(move *moves.Move) bool {
+func (p *Position) IsValidMove(move *board.Move) bool {
 	return false
 }
 

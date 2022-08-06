@@ -42,4 +42,22 @@ const (
 	Black
 )
 
-type Board struct{}
+type Board struct {
+	WhiteKing King
+	BlackKing King
+
+	WhiteQueens Queens
+	BlackQueens Queens
+
+	WhiteBishops Bishops
+	BlackBishops Bishops
+
+	WhiteKnights Knights
+	BlackKnights Knights
+
+	WhiteRooks Rooks
+	BlackRooks Rooks
+
+	WhitePawns Pawns
+	BlackPawns Pawns
+}

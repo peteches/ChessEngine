@@ -1,11 +1,10 @@
-package moves_test
+package board_test
 
 import (
 	"testing"
 
 	"github.com/peteches/ChessEngine/board"
 	"github.com/peteches/ChessEngine/errors"
-	"github.com/peteches/ChessEngine/moves"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -13,7 +12,7 @@ import (
 func TestMoveStruct(t *testing.T) {
 	Convey("Given a Move struct", t, func() {
 		Convey("it should have relevant fields", func() {
-			move := moves.Move{}
+			move := board.Move{}
 			So(move.SrcSquare, ShouldHaveSameTypeAs, board.Square(0))
 			So(move.DstSquare, ShouldHaveSameTypeAs, board.Square(0))
 			So(move.Capture, ShouldHaveSameTypeAs, true)
@@ -22,7 +21,7 @@ func TestMoveStruct(t *testing.T) {
 		})
 		Convey("There should be a NewMove() func", func() {
 			Convey("It should accept a LAN encoded move", func() {
-				testCases := map[string]*moves.Move{
+				testCases := map[string]*board.Move{
 					"e2e4": {
 						Piece:       "P",
 						SrcSquare:   board.E2,
@@ -95,7 +94,7 @@ func TestMoveStruct(t *testing.T) {
 					},
 				}
 				for move, expectedMove := range testCases {
-					m, err := moves.NewMove(move)
+					m, err := board.NewMove(move)
 					So(err, ShouldEqual, nil)
 					So(m, ShouldResemble, expectedMove)
 				}
@@ -109,7 +108,7 @@ func TestMoveStruct(t *testing.T) {
 					},
 				}
 				for move, err := range testCases {
-					m, mError := moves.NewMove(move)
+					m, mError := board.NewMove(move)
 					So(*mError, ShouldResemble, err)
 					So(m, ShouldEqual, nil)
 				}
@@ -202,7 +201,7 @@ func TestValidMove(t *testing.T) {
 				},
 			}
 			for _, tc := range testCases {
-				result := moves.ValidMove(tc.piece, tc.src, tc.dst)
+				result := board.ValidMove(tc.piece, tc.src, tc.dst)
 				So(result, ShouldEqual, tc.expectedResult)
 			}
 		})
@@ -230,7 +229,7 @@ func TestKnightMoves(t *testing.T) {
 				},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.KnightMoves(src)
+				moves := board.KnightMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)
@@ -255,7 +254,7 @@ func TestOrthaganolRankMoves(t *testing.T) {
 				board.C6: {board.A6, board.B6, board.D6, board.E6, board.F6, board.G6, board.H6},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.OrthaganolRankMoves(src)
+				moves := board.OrthaganolRankMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)
@@ -280,7 +279,7 @@ func TestOrthaganolFileMoves(t *testing.T) {
 				board.E5: {board.E1, board.E2, board.E3, board.E4, board.E6, board.E7, board.E8},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.OrthaganolFileMoves(src)
+				moves := board.OrthaganolFileMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)
@@ -308,7 +307,7 @@ func TestDiagonalMoves(t *testing.T) {
 				board.G8: {board.A2, board.B3, board.C4, board.D5, board.E6, board.F7, board.H7},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.DiagonalMoves(src)
+				moves := board.DiagonalMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)
@@ -333,7 +332,7 @@ func TestKingMoves(t *testing.T) {
 				board.E5: {board.D4, board.D5, board.D6, board.E4, board.E6, board.F4, board.F5, board.F6},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.KingMoves(src)
+				moves := board.KingMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)
@@ -353,7 +352,7 @@ func TestPawnMoves(t *testing.T) {
 				board.D3: {board.C4, board.D4, board.E4},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.WhitePawnMoves(src)
+				moves := board.WhitePawnMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)
@@ -370,7 +369,7 @@ func TestPawnMoves(t *testing.T) {
 				board.C7: {board.B6, board.C6, board.C5, board.D6},
 			}
 			for src, expectedDsts := range testCases {
-				moves := moves.BlackPawnMoves(src)
+				moves := board.BlackPawnMoves(src)
 				So(moves, ShouldHaveLength, len(expectedDsts))
 				for _, dstSqr := range expectedDsts {
 					So(moves, ShouldContain, dstSqr)

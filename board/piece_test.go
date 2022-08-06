@@ -1,4 +1,4 @@
-package pieces_test
+package board_test
 
 import (
 	"testing"

@@ -5,7 +5,6 @@ import (
 
 	"github.com/peteches/ChessEngine/board"
 	"github.com/peteches/ChessEngine/errors"
-	"github.com/peteches/ChessEngine/moves"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -680,7 +679,7 @@ func TestPosition(t *testing.T) {
 					for move, moveIsValid := range v {
 						err := pos.SetPositionFromFen(startFen)
 						So(err, ShouldEqual, nil)
-						m, _ := moves.NewMove(move)
+						m, _ := board.NewMove(move)
 						So(pos.IsValidMove(m), ShouldEqual, moveIsValid)
 					}
 				}
