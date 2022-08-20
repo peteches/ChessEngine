@@ -10,8 +10,7 @@ import (
 func TestRooks(t *testing.T) {
 	Convey("Given a rook struct", t, func() {
 		rook := board.Rooks{}
-		Convey("It should have a Positions field", func() {
-			So(rook.Positions, ShouldHaveSameTypeAs, &board.BitBoard{})
+		Convey("It should have a Colour field", func() {
 			var testSide board.Side
 			So(rook.Colour, ShouldHaveSameTypeAs, testSide)
 		})
@@ -27,6 +26,9 @@ func TestRooks(t *testing.T) {
 				So(bRook.ValidMove(board.A1, board.B1), ShouldBeTrue)
 				So(bRook.ValidMove(board.A1, board.B2), ShouldBeFalse)
 				So(bRook.ValidMove(board.B1, board.H2), ShouldBeFalse)
+			})
+			Convey("By returning a pointer to it's internal BitBoard", func() {
+				So(rook.Positions(), ShouldHaveSameTypeAs, &board.BitBoard{})
 			})
 			So(rook, ShouldImplement, (*board.Piece)(nil))
 		})

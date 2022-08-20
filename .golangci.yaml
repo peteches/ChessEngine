@@ -11,6 +11,7 @@ linters:
     - golint
     - nolintlint
     - lll
+    - gofmt
 linter-settings:
   misspell:
     locale: en_GB

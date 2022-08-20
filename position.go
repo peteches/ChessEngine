@@ -238,7 +238,7 @@ func (p *Position) String() string {
 	if p.EnPassantTarget == 0 {
 		fen += "-"
 	} else {
-		fen += board.BoardMatrixItoS[p.EnPassantTarget]
+		fen += p.EnPassantTarget.String()
 	}
 
 	fen += " "
@@ -246,10 +246,6 @@ func (p *Position) String() string {
 	fen += fmt.Sprintf("%d %d", p.HalfmoveClock, p.FullMoveCounter)
 
 	return fen
-}
-
-func (p *Position) IsValidMove(move *board.Move) bool {
-	return false
 }
 
 func NewPosition() *Position {

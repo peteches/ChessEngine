@@ -11,4 +11,5 @@ It should be able to return potential Squares to move to.
 type Piece interface {
 	String() string
 	ValidMove(Square, Square) bool
+	Positions() *BitBoard
 }

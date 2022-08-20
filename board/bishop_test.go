@@ -10,8 +10,7 @@ import (
 func TestBishops(t *testing.T) {
 	Convey("Given a bishop struct", t, func() {
 		bishop := board.Bishops{}
-		Convey("It should have a Positions field", func() {
-			So(bishop.Positions, ShouldHaveSameTypeAs, &board.BitBoard{})
+		Convey("It should have a Colour field", func() {
 			var testSide board.Side
 			So(bishop.Colour, ShouldHaveSameTypeAs, testSide)
 		})
@@ -27,6 +26,9 @@ func TestBishops(t *testing.T) {
 				So(bBishop.ValidMove(board.A1, board.B1), ShouldBeFalse)
 				So(bBishop.ValidMove(board.A1, board.B2), ShouldBeTrue)
 				So(bBishop.ValidMove(board.B1, board.H2), ShouldBeFalse)
+			})
+			Convey("By returning a pointer to it's internal BitBoard", func() {
+				So(bishop.Positions(), ShouldHaveSameTypeAs, &board.BitBoard{})
 			})
 			So(bishop, ShouldImplement, (*board.Piece)(nil))
 		})

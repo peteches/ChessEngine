@@ -6,14 +6,14 @@ import (
 )
 
 type Knights struct {
-	Positions *BitBoard
-	Colour    Side
+	BitBoard *BitBoard
+	Colour   Side
 }
 
 func NewKnights(colour Side, startingPosition ...Square) *Knights {
 	knights := Knights{
-		Positions: NewBitboard(startingPosition...),
-		Colour:    colour,
+		BitBoard: NewBitboard(startingPosition...),
+		Colour:   colour,
 	}
 
 	return &knights
@@ -32,15 +32,15 @@ func (q *Knights) String() string {
 
 func (q *Knights) ValidMove(src, dst Square) bool {
 	log.Debug().
-		Str("source", BoardMatrixItoS[src]).
-		Str("destination", BoardMatrixItoS[dst]).
+		Str("source", src.String()).
+		Str("destination", dst.String()).
 		Msg("Validating Knight move")
 
 	for _, validDst := range KnightMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid Knight Move")
 
 			return true
@@ -48,4 +48,8 @@ func (q *Knights) ValidMove(src, dst Square) bool {
 	}
 
 	return false
+}
+
+func (q *Knights) Positions() *BitBoard {
+	return q.BitBoard
 }

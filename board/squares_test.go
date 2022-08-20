@@ -7,7 +7,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-//nolint:funlen // Convey testing is verbose.
+//nolint:funlen,maintidx // Convey testing is verbose.
 func TestSquare(t *testing.T) {
 	Convey("Constants Set Correctly", t, func() {
 		So(board.A1, ShouldEqual, board.Square(1))
@@ -76,6 +76,72 @@ func TestSquare(t *testing.T) {
 		So(board.H8, ShouldEqual, board.Square(1<<63))
 	})
 	Convey("Given a board.Square type", t, func() {
+		Convey("It should have a String() method that reveal the co-ordinates of the square", func() {
+			So(board.A1.String(), ShouldEqual, "A1")
+			So(board.B1.String(), ShouldEqual, "B1")
+			So(board.C1.String(), ShouldEqual, "C1")
+			So(board.D1.String(), ShouldEqual, "D1")
+			So(board.E1.String(), ShouldEqual, "E1")
+			So(board.F1.String(), ShouldEqual, "F1")
+			So(board.G1.String(), ShouldEqual, "G1")
+			So(board.H1.String(), ShouldEqual, "H1")
+			So(board.A2.String(), ShouldEqual, "A2")
+			So(board.B2.String(), ShouldEqual, "B2")
+			So(board.C2.String(), ShouldEqual, "C2")
+			So(board.D2.String(), ShouldEqual, "D2")
+			So(board.E2.String(), ShouldEqual, "E2")
+			So(board.F2.String(), ShouldEqual, "F2")
+			So(board.G2.String(), ShouldEqual, "G2")
+			So(board.H2.String(), ShouldEqual, "H2")
+			So(board.A3.String(), ShouldEqual, "A3")
+			So(board.B3.String(), ShouldEqual, "B3")
+			So(board.C3.String(), ShouldEqual, "C3")
+			So(board.D3.String(), ShouldEqual, "D3")
+			So(board.E3.String(), ShouldEqual, "E3")
+			So(board.F3.String(), ShouldEqual, "F3")
+			So(board.G3.String(), ShouldEqual, "G3")
+			So(board.H3.String(), ShouldEqual, "H3")
+			So(board.A4.String(), ShouldEqual, "A4")
+			So(board.B4.String(), ShouldEqual, "B4")
+			So(board.C4.String(), ShouldEqual, "C4")
+			So(board.D4.String(), ShouldEqual, "D4")
+			So(board.E4.String(), ShouldEqual, "E4")
+			So(board.F4.String(), ShouldEqual, "F4")
+			So(board.G4.String(), ShouldEqual, "G4")
+			So(board.H4.String(), ShouldEqual, "H4")
+			So(board.A5.String(), ShouldEqual, "A5")
+			So(board.B5.String(), ShouldEqual, "B5")
+			So(board.C5.String(), ShouldEqual, "C5")
+			So(board.D5.String(), ShouldEqual, "D5")
+			So(board.E5.String(), ShouldEqual, "E5")
+			So(board.F5.String(), ShouldEqual, "F5")
+			So(board.G5.String(), ShouldEqual, "G5")
+			So(board.H5.String(), ShouldEqual, "H5")
+			So(board.A6.String(), ShouldEqual, "A6")
+			So(board.B6.String(), ShouldEqual, "B6")
+			So(board.C6.String(), ShouldEqual, "C6")
+			So(board.D6.String(), ShouldEqual, "D6")
+			So(board.E6.String(), ShouldEqual, "E6")
+			So(board.F6.String(), ShouldEqual, "F6")
+			So(board.G6.String(), ShouldEqual, "G6")
+			So(board.H6.String(), ShouldEqual, "H6")
+			So(board.A7.String(), ShouldEqual, "A7")
+			So(board.B7.String(), ShouldEqual, "B7")
+			So(board.C7.String(), ShouldEqual, "C7")
+			So(board.D7.String(), ShouldEqual, "D7")
+			So(board.E7.String(), ShouldEqual, "E7")
+			So(board.F7.String(), ShouldEqual, "F7")
+			So(board.G7.String(), ShouldEqual, "G7")
+			So(board.H7.String(), ShouldEqual, "H7")
+			So(board.A8.String(), ShouldEqual, "A8")
+			So(board.B8.String(), ShouldEqual, "B8")
+			So(board.C8.String(), ShouldEqual, "C8")
+			So(board.D8.String(), ShouldEqual, "D8")
+			So(board.E8.String(), ShouldEqual, "E8")
+			So(board.F8.String(), ShouldEqual, "F8")
+			So(board.G8.String(), ShouldEqual, "G8")
+			So(board.H8.String(), ShouldEqual, "H8")
+		})
 		Convey("It should have a File() method that reveals which file the square is in", func() {
 			testCases := map[board.Square]uint8{
 				board.A1: 1, board.A2: 1, board.A3: 1, board.A4: 1, board.A5: 1, board.A6: 1, board.A7: 1, board.A8: 1,
@@ -180,6 +246,77 @@ func TestSquare(t *testing.T) {
 			for sqr, expectedResult := range testCases {
 				So(sqr.OnEdge(), ShouldEqual, expectedResult)
 			}
+		})
+	})
+}
+
+func TestSquaresAdjacent(t *testing.T) {
+	Convey("Given a SquaresAdjacent() Function", t, func() {
+		Convey("It should return true if src and dst are 1 square away", func() {
+			testCasesAdj := [][2]board.Square{
+				{board.E5, board.E6},
+				{board.E5, board.E4},
+				{board.E5, board.D4},
+				{board.E5, board.D5},
+				{board.E5, board.D6},
+				{board.E5, board.F4},
+				{board.E5, board.F5},
+				{board.E5, board.F6},
+			}
+			for _, tc := range testCasesAdj {
+				So(board.SquaresAdjacent(tc[0], tc[1]), ShouldBeTrue)
+			}
+		})
+		Convey("It should return false if src and dst are more than 1 square away", func() {
+			testCasesAdj := [][2]board.Square{
+				{board.A1, board.A3},
+			}
+			for _, tc := range testCasesAdj {
+				So(board.SquaresAdjacent(tc[0], tc[1]), ShouldBeFalse)
+			}
+		})
+	})
+}
+
+func TestSquaresBetween(t *testing.T) {
+	Convey("Given a SquaresBetween() Function", t, func() {
+		Convey("It should return an empty list if the squares are not on the same diagonal, file or rank", func() {
+			testCases := [][2]board.Square{
+				{board.A1, board.B1},
+			}
+			for _, x := range testCases {
+				So(board.SquaresBetween(x[0], x[1]), ShouldBeEmpty)
+			}
+		})
+		Convey("It should return a list of Squares between src and dst if they are on the same diagonal, rank or file", func() {
+			Convey("This should be an empty list if the squares are adjacant or do not share a diagonal, rank or file", func() {
+				testCases := [][2]board.Square{
+					{board.A1, board.B2},
+					{board.A1, board.A2},
+					{board.A1, board.B1},
+					{board.E8, board.A1},
+				}
+				for _, x := range testCases {
+					So(board.SquaresBetween(x[0], x[1]), ShouldBeEmpty)
+				}
+			})
+			Convey("This should not be an empty list if the squares are not adjacant", func() {
+				testCases := map[[2]board.Square][]board.Square{
+					{board.A1, board.A8}: {board.A2, board.A3, board.A4, board.A5, board.A6, board.A7},
+					{board.A8, board.A1}: {board.A2, board.A3, board.A4, board.A5, board.A6, board.A7},
+					{board.A1, board.H1}: {board.B1, board.C1, board.D1, board.E1, board.F1, board.G1},
+					{board.H1, board.A1}: {board.B1, board.C1, board.D1, board.E1, board.F1, board.G1},
+					{board.B2, board.H8}: {board.C3, board.D4, board.E5, board.F6, board.G7},
+					{board.E2, board.C4}: {board.D3},
+				}
+				for x, expectedSquares := range testCases {
+					result := board.SquaresBetween(x[0], x[1])
+					So(result, ShouldHaveLength, len(expectedSquares))
+					for _, sqr := range expectedSquares {
+						So(result, ShouldContain, sqr)
+					}
+				}
+			})
 		})
 	})
 }

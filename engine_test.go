@@ -70,7 +70,7 @@ func TestEngine(t *testing.T) {
 				})
 			})
 			Convey("with a fen string ", func() {
-				SkipConvey("should initialise that position", func() {
+				Convey("should initialise that position", func() {
 					for fen := range validFenstrings {
 						ctx, ctxCancel := context.WithCancel(ctx)
 						toEng, _, debug := engine(ctx)
@@ -85,22 +85,20 @@ func TestEngine(t *testing.T) {
 					}
 				})
 				validFenstringsWithMoves := map[string]Position{
-					"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1": {
+					"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 e2-e4": {
 						Board: &board.Board{
 							WhiteKing:    board.NewKing(board.White, board.E1),
 							WhiteQueens:  board.NewQueens(board.White, board.D1),
 							WhiteBishops: board.NewBishops(board.White, board.C1, board.F1),
 							WhiteKnights: board.NewKnights(board.White, board.B1, board.G1),
 							WhiteRooks:   board.NewRooks(board.White, board.A1, board.H1),
-							WhitePawns: board.NewPawns(board.White,
-								board.A2, board.B2, board.C2, board.D2, board.E2, board.F2, board.G2, board.H2),
+							WhitePawns:   board.NewPawns(board.White, board.A2, board.B2, board.C2, board.D2, board.E4, board.F2, board.G2, board.H2),
 							BlackKing:    board.NewKing(board.Black, board.E8),
 							BlackQueens:  board.NewQueens(board.Black, board.D8),
 							BlackBishops: board.NewBishops(board.Black, board.C8, board.F8),
 							BlackKnights: board.NewKnights(board.Black, board.B8, board.G8),
 							BlackRooks:   board.NewRooks(board.Black, board.A8, board.H8),
-							BlackPawns: board.NewPawns(board.Black,
-								board.A7, board.B7, board.C7, board.D4, board.E7, board.F7, board.G7, board.H7),
+							BlackPawns:   board.NewPawns(board.Black, board.A7, board.B7, board.C7, board.D7, board.E7, board.F7, board.G7, board.H7),
 						},
 						SideToMove: WHITE,
 						CastlingRights: 0 ^ (WhiteKingSideAllowed |

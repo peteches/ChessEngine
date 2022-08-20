@@ -6,14 +6,14 @@ import (
 )
 
 type King struct {
-	Positions *BitBoard
-	Colour    Side
+	BitBoard *BitBoard
+	Colour   Side
 }
 
 func NewKing(colour Side, startingPosition ...Square) *King {
 	kings := King{
-		Positions: NewBitboard(startingPosition...),
-		Colour:    colour,
+		BitBoard: NewBitboard(startingPosition...),
+		Colour:   colour,
 	}
 
 	return &kings
@@ -32,15 +32,15 @@ func (q *King) String() string {
 
 func (q *King) ValidMove(src, dst Square) bool {
 	log.Debug().
-		Str("source", BoardMatrixItoS[src]).
-		Str("destination", BoardMatrixItoS[dst]).
+		Str("source", src.String()).
+		Str("destination", dst.String()).
 		Msg("Validating King move")
 
 	for _, validDst := range KingMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid King Move")
 
 			return true
@@ -48,4 +48,8 @@ func (q *King) ValidMove(src, dst Square) bool {
 	}
 
 	return false
+}
+
+func (q *King) Positions() *BitBoard {
+	return q.BitBoard
 }

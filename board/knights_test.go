@@ -10,8 +10,7 @@ import (
 func TestKnights(t *testing.T) {
 	Convey("Given a knight struct", t, func() {
 		knight := board.Knights{}
-		Convey("It should have a Positions field", func() {
-			So(knight.Positions, ShouldHaveSameTypeAs, &board.BitBoard{})
+		Convey("It should have a Colour field", func() {
 			var testSide board.Side
 			So(knight.Colour, ShouldHaveSameTypeAs, testSide)
 		})
@@ -27,6 +26,9 @@ func TestKnights(t *testing.T) {
 				So(bKnight.ValidMove(board.A1, board.B1), ShouldBeFalse)
 				So(bKnight.ValidMove(board.A1, board.B3), ShouldBeTrue)
 				So(bKnight.ValidMove(board.B1, board.H2), ShouldBeFalse)
+			})
+			Convey("By returning a pointer to it's internal BitBoard", func() {
+				So(knight.Positions(), ShouldHaveSameTypeAs, &board.BitBoard{})
 			})
 			So(knight, ShouldImplement, (*board.Piece)(nil))
 		})

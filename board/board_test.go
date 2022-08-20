@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/peteches/ChessEngine/board"
+	"github.com/peteches/ChessEngine/errors"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -263,61 +264,29 @@ func TestBoard(t *testing.T) {
 			So(testBoard.BlackRooks, ShouldNotBeNil)
 			So(testBoard.BlackPawns, ShouldNotBeNil)
 		})
+		err := testBoard.SetPieces("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+		So(err, ShouldBeNil)
 		Convey("It should have an OccupiedBy() Method", func() {
-			testBoard.BlackBishops.Positions.FlipBit(board.A8)
-			So(testBoard.OccupiedBy(board.A8), ShouldEqual, "b")
-			testBoard.BlackBishops.Positions.FlipBit(board.F3)
-			So(testBoard.OccupiedBy(board.F3), ShouldEqual, "b")
-			testBoard.WhiteQueens.Positions.FlipBit(board.H3)
-			So(testBoard.OccupiedBy(board.H3), ShouldEqual, "Q")
-			testBoard.WhiteRooks.Positions.FlipBit(board.H1)
+			So(testBoard.OccupiedBy(board.C8), ShouldEqual, "b")
+			So(testBoard.OccupiedBy(board.F8), ShouldEqual, "b")
+			So(testBoard.OccupiedBy(board.D8), ShouldEqual, "q")
+			So(testBoard.OccupiedBy(board.H8), ShouldEqual, "r")
+			So(testBoard.OccupiedBy(board.C1), ShouldEqual, "B")
+			So(testBoard.OccupiedBy(board.F1), ShouldEqual, "B")
+			So(testBoard.OccupiedBy(board.D1), ShouldEqual, "Q")
 			So(testBoard.OccupiedBy(board.H1), ShouldEqual, "R")
 		})
 		Convey("the Occupied() method should return true if any piece is in square", func() {
 			for _, sqr := range board.AllSquares {
-				So(testBoard.Occupied(sqr), ShouldEqual, false)
+				switch sqr.Rank() {
+				case board.FirstRank, board.SecondRank, board.SeventhRank, board.EighthRank:
+					So(testBoard.Occupied(sqr), ShouldEqual, true)
+				default:
+					So(testBoard.Occupied(sqr), ShouldEqual, false)
+				}
 			}
-			testBoard.BlackBishops.Positions.FlipBit(board.A8)
-			So(testBoard.Occupied(board.A8), ShouldEqual, true)
-			testBoard.WhiteRooks.Positions.FlipBit(board.H1)
-			So(testBoard.Occupied(board.H1), ShouldEqual, true)
-			testBoard.BlackQueens.Positions.FlipBit(board.H3)
-			So(testBoard.Occupied(board.H3), ShouldEqual, true)
 		})
 		Convey("the String() method returns the string representation of the pieces ala fen notation", func() {
-			So(testBoard.String(), ShouldEqual, "8/8/8/8/8/8/8/8")
-			testBoard.BlackRooks.Positions.FlipBit(board.A8)
-			testBoard.BlackKnights.Positions.FlipBit(board.B8)
-			testBoard.BlackBishops.Positions.FlipBit(board.C8)
-			testBoard.BlackQueens.Positions.FlipBit(board.D8)
-			testBoard.BlackKing.Positions.FlipBit(board.E8)
-			testBoard.BlackBishops.Positions.FlipBit(board.F8)
-			testBoard.BlackKnights.Positions.FlipBit(board.G8)
-			testBoard.BlackRooks.Positions.FlipBit(board.H8)
-			testBoard.BlackPawns.Positions.FlipBit(board.A7)
-			testBoard.BlackPawns.Positions.FlipBit(board.B7)
-			testBoard.BlackPawns.Positions.FlipBit(board.C7)
-			testBoard.BlackPawns.Positions.FlipBit(board.D7)
-			testBoard.BlackPawns.Positions.FlipBit(board.E7)
-			testBoard.BlackPawns.Positions.FlipBit(board.F7)
-			testBoard.BlackPawns.Positions.FlipBit(board.G7)
-			testBoard.BlackPawns.Positions.FlipBit(board.H7)
-			testBoard.WhitePawns.Positions.FlipBit(board.A2)
-			testBoard.WhitePawns.Positions.FlipBit(board.B2)
-			testBoard.WhitePawns.Positions.FlipBit(board.C2)
-			testBoard.WhitePawns.Positions.FlipBit(board.D2)
-			testBoard.WhitePawns.Positions.FlipBit(board.E2)
-			testBoard.WhitePawns.Positions.FlipBit(board.F2)
-			testBoard.WhitePawns.Positions.FlipBit(board.G2)
-			testBoard.WhitePawns.Positions.FlipBit(board.H2)
-			testBoard.WhiteRooks.Positions.FlipBit(board.A1)
-			testBoard.WhiteKnights.Positions.FlipBit(board.B1)
-			testBoard.WhiteBishops.Positions.FlipBit(board.C1)
-			testBoard.WhiteQueens.Positions.FlipBit(board.D1)
-			testBoard.WhiteKing.Positions.FlipBit(board.E1)
-			testBoard.WhiteBishops.Positions.FlipBit(board.F1)
-			testBoard.WhiteKnights.Positions.FlipBit(board.G1)
-			testBoard.WhiteRooks.Positions.FlipBit(board.H1)
 			So(testBoard.String(), ShouldEqual, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 		})
 		Convey("The setPieces method should update Pieces bitboards", func() {
@@ -326,6 +295,179 @@ func TestBoard(t *testing.T) {
 				So(err, ShouldEqual, nil)
 				So(*testBoard, ShouldResemble, expectedPiecePosition)
 			}
+		})
+		Convey("The IsInCheck() method should", func() {
+			Convey("return true if Side is in check", func() {
+				inCheck := []string{
+					"k7/8/8/8/8/8/8/R1K5",
+					"k7/2N5/8/8/8/8/8/K",
+					"k7/8/8/8/8/8/8/K6B",
+					"k7/8/8/8/8/8/8/K6B",
+					"k7/8/8/8/8/8/8/Q1K5",
+					"k7/8/8/8/8/8/8/K6Q",
+					"k7/1P6/8/8/8/8/8/K7",
+				}
+				for _, tc := range inCheck {
+					err := testBoard.SetPieces(tc)
+					So(err, ShouldBeNil)
+					So(testBoard.IsInCheck(board.Black), ShouldBeTrue)
+				}
+			})
+			Convey("return false if Side is not in check", func() {
+				notInCheck := []string{
+					"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+				}
+				for _, tc := range notInCheck {
+					err := testBoard.SetPieces(tc)
+					So(err, ShouldBeNil)
+					So(testBoard.IsInCheck(board.Black), ShouldBeFalse)
+				}
+			})
+		})
+		Convey("The MakeMove() method should", func() {
+			Convey("return an error if given an invalid move", func() {
+				testCases := []struct {
+					move string
+					side board.Side
+					err  *errors.MoveError
+				}{
+					{
+						"e2-e5",
+						board.Black,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "e2-e5",
+						},
+					},
+					{
+						"e2-e5",
+						board.White,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "e2-e5",
+						},
+					},
+					{
+						"qe2-h6",
+						board.Black,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "qe2-h6",
+						},
+					},
+					{
+						"re2-b5",
+						board.Black,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "re2-b5",
+						},
+					},
+					{
+						"be2-e5",
+						board.Black,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "be2-e5",
+						},
+					},
+					{
+						"ne2-e5",
+						board.Black,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "ne2-e5",
+						},
+					},
+					{
+						"ke2-e5",
+						board.Black,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Invalid move.",
+							Move: "ke2-e5",
+						},
+					},
+				}
+				for _, tc := range testCases {
+					_, err := testBoard.MakeMove(tc.side, tc.move)
+					So(err, ShouldResemble, tc.err)
+				}
+			})
+			Convey("return a MoveError if the move is Valid but Illegal", func() {
+				testCases := []struct {
+					position string
+					move     string
+					side     board.Side
+					err      *errors.MoveError
+				}{
+					{
+						"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+						"bC1-A3",
+						board.White,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Illegal move, there is an intervening piece.",
+							Move: "bC1-A3",
+						},
+					},
+					{
+						"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+						"qC1-A3",
+						board.White,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Illegal move, the src square does not contain the expected piece.",
+							Move: "qC1-A3",
+						},
+					},
+					{
+						"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+						"kE1-D1",
+						board.White,
+						&errors.MoveError{
+							Fen:  testBoard.String(),
+							Err:  "Illegal move, you cannot capture your own pieces.",
+							Move: "kE1-D1",
+						},
+					},
+					{
+						"rnbqkbnr/ppppRppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+						"nG8-H6",
+						board.Black,
+						&errors.MoveError{
+							Fen:  "rnbqkbnr/ppppRppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+							Err:  "Illegal move, you cannot end your turn in check.",
+							Move: "nG8-H6",
+						},
+					},
+				}
+				for _, tc := range testCases {
+					errPos := testBoard.SetPieces(tc.position)
+					So(errPos, ShouldBeNil)
+					_, err := testBoard.MakeMove(tc.side, tc.move)
+					So(err, ShouldResemble, tc.err)
+				}
+			})
+
+			SkipConvey("update the board with the relevant move", func() {
+				testCases := map[string]string{
+					"e2-e4": "rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR",
+				}
+
+				for move, resultFen := range testCases {
+					So(err, ShouldBeNil)
+					_, err := testBoard.MakeMove(board.White, move)
+					So(err, ShouldBeNil)
+					So(testBoard.String(), ShouldEqual, resultFen)
+				}
+			})
 		})
 	})
 }

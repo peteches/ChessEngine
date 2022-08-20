@@ -536,23 +536,6 @@ func TestPosition(t *testing.T) {
 				So(pos.String(), ShouldEqual, fen)
 			}
 		})
-		Convey("The IsValidMove() method should", func() {
-			SkipConvey("Accept a Move{} and return bool", func() {
-				testCases := map[string]map[string]bool{
-					"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - E3 1 4": {
-						"e2e4": true,
-					},
-				}
-				for startFen, v := range testCases {
-					for move, moveIsValid := range v {
-						err := pos.SetPositionFromFen(startFen)
-						So(err, ShouldEqual, nil)
-						m, _ := board.NewMove(move)
-						So(pos.IsValidMove(m), ShouldEqual, moveIsValid)
-					}
-				}
-			})
-		})
 	})
 }
 

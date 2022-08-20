@@ -5,14 +5,14 @@ import (
 )
 
 type Rooks struct {
-	Positions *BitBoard
-	Colour    Side
+	BitBoard *BitBoard
+	Colour   Side
 }
 
 func NewRooks(colour Side, startingPosition ...Square) *Rooks {
 	rooks := Rooks{
-		Positions: NewBitboard(startingPosition...),
-		Colour:    colour,
+		BitBoard: NewBitboard(startingPosition...),
+		Colour:   colour,
 	}
 
 	return &rooks
@@ -31,15 +31,15 @@ func (q *Rooks) String() string {
 
 func (q *Rooks) ValidMove(src, dst Square) bool {
 	log.Debug().
-		Str("source", BoardMatrixItoS[src]).
-		Str("destination", BoardMatrixItoS[dst]).
+		Str("source", src.String()).
+		Str("destination", dst.String()).
 		Msg("Validating Queen move")
 
 	for _, validDst := range OrthaganolFileMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid orthagonal File Move")
 
 			return true
@@ -49,8 +49,8 @@ func (q *Rooks) ValidMove(src, dst Square) bool {
 	for _, validDst := range OrthaganolRankMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid orthagonal Rank Move")
 
 			return true
@@ -58,4 +58,8 @@ func (q *Rooks) ValidMove(src, dst Square) bool {
 	}
 
 	return false
+}
+
+func (q *Rooks) Positions() *BitBoard {
+	return q.BitBoard
 }

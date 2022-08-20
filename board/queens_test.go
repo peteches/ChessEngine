@@ -10,8 +10,7 @@ import (
 func TestQueens(t *testing.T) {
 	Convey("Given a queen struct", t, func() {
 		queen := board.Queens{}
-		Convey("It should have a Positions field", func() {
-			So(queen.Positions, ShouldHaveSameTypeAs, &board.BitBoard{})
+		Convey("It should have a Colour field", func() {
 			var testSide board.Side
 			So(queen.Colour, ShouldHaveSameTypeAs, testSide)
 		})
@@ -27,6 +26,9 @@ func TestQueens(t *testing.T) {
 				So(bQueen.ValidMove(board.A1, board.B1), ShouldBeTrue)
 				So(bQueen.ValidMove(board.A1, board.B2), ShouldBeTrue)
 				So(bQueen.ValidMove(board.B1, board.H2), ShouldBeFalse)
+			})
+			Convey("By returning a pointer to it's internal BitBoard", func() {
+				So(queen.Positions(), ShouldHaveSameTypeAs, &board.BitBoard{})
 			})
 			So(queen, ShouldImplement, (*board.Piece)(nil))
 		})

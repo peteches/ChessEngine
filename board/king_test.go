@@ -10,8 +10,7 @@ import (
 func TestKings(t *testing.T) {
 	Convey("Given a king struct", t, func() {
 		king := board.King{}
-		Convey("It should have a Positions field", func() {
-			So(king.Positions, ShouldHaveSameTypeAs, &board.BitBoard{})
+		Convey("It should have a Colour field", func() {
 			var testSide board.Side
 			So(king.Colour, ShouldHaveSameTypeAs, testSide)
 		})
@@ -28,6 +27,9 @@ func TestKings(t *testing.T) {
 				So(bKing.ValidMove(board.A1, board.B1), ShouldBeTrue)
 				So(bKing.ValidMove(board.A1, board.B2), ShouldBeTrue)
 				So(bKing.ValidMove(board.B1, board.H2), ShouldBeFalse)
+			})
+			Convey("By returning a pointer to it's internal BitBoard", func() {
+				So(king.Positions(), ShouldHaveSameTypeAs, &board.BitBoard{})
 			})
 			So(king, ShouldImplement, (*board.Piece)(nil))
 		})

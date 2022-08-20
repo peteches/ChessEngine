@@ -5,14 +5,14 @@ import (
 )
 
 type Queens struct {
-	Positions *BitBoard
-	Colour    Side
+	BitBoard *BitBoard
+	Colour   Side
 }
 
 func NewQueens(colour Side, startingPosition ...Square) *Queens {
 	queens := Queens{
-		Positions: NewBitboard(startingPosition...),
-		Colour:    colour,
+		BitBoard: NewBitboard(startingPosition...),
+		Colour:   colour,
 	}
 
 	return &queens
@@ -31,15 +31,15 @@ func (q *Queens) String() string {
 
 func (q *Queens) ValidMove(src, dst Square) bool {
 	log.Debug().
-		Str("source", BoardMatrixItoS[src]).
-		Str("destination", BoardMatrixItoS[dst]).
+		Str("source", src.String()).
+		Str("destination", dst.String()).
 		Msg("Validating Queen move")
 
 	for _, validDst := range DiagonalMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid diagonal Move")
 
 			return true
@@ -49,8 +49,8 @@ func (q *Queens) ValidMove(src, dst Square) bool {
 	for _, validDst := range OrthaganolFileMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid orthagonal File Move")
 
 			return true
@@ -60,8 +60,8 @@ func (q *Queens) ValidMove(src, dst Square) bool {
 	for _, validDst := range OrthaganolRankMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid orthagonal Rank Move")
 
 			return true
@@ -69,4 +69,8 @@ func (q *Queens) ValidMove(src, dst Square) bool {
 	}
 
 	return false
+}
+
+func (q *Queens) Positions() *BitBoard {
+	return q.BitBoard
 }

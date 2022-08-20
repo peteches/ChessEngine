@@ -6,14 +6,14 @@ import (
 )
 
 type Bishops struct {
-	Positions *BitBoard
-	Colour    Side
+	BitBoard *BitBoard
+	Colour   Side
 }
 
 func NewBishops(colour Side, startingPosition ...Square) *Bishops {
 	bishops := Bishops{
-		Positions: NewBitboard(startingPosition...),
-		Colour:    colour,
+		BitBoard: NewBitboard(startingPosition...),
+		Colour:   colour,
 	}
 
 	return &bishops
@@ -32,15 +32,15 @@ func (q *Bishops) String() string {
 
 func (q *Bishops) ValidMove(src, dst Square) bool {
 	log.Debug().
-		Str("source", BoardMatrixItoS[src]).
-		Str("destination", BoardMatrixItoS[dst]).
+		Str("source", src.String()).
+		Str("destination", dst.String()).
 		Msg("Validating Bishop move")
 
 	for _, validDst := range DiagonalMoves(src) {
 		if dst == validDst {
 			log.Debug().
-				Str("source", BoardMatrixItoS[src]).
-				Str("destination", BoardMatrixItoS[dst]).
+				Str("source", src.String()).
+				Str("destination", dst.String()).
 				Msg("Dest is a valid diagonal Move")
 
 			return true
@@ -48,4 +48,8 @@ func (q *Bishops) ValidMove(src, dst Square) bool {
 	}
 
 	return false
+}
+
+func (q *Bishops) Positions() *BitBoard {
+	return q.BitBoard
 }

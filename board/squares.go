@@ -1,5 +1,7 @@
 package board
 
+import "github.com/rs/zerolog/log"
+
 const TotalSquares = 64
 
 const (
@@ -25,6 +27,10 @@ const (
 )
 
 type Square uint64
+
+func (s Square) String() string {
+	return BoardMatrixItoS[s]
+}
 
 func (s *Square) File() uint8 {
 	switch *s {
@@ -239,7 +245,7 @@ var BoardMatrixStoI = map[string]Square{
 	"H1": H1,
 }
 
-// BoardMatrixItoS returns the string co-ordinate of a given Square
+// returns the string co-ordinate of a given Squar.String()
 
 //nolint:gochecknoglobals // this is a pseudo const
 var BoardMatrixItoS = map[Square]string{
@@ -307,4 +313,99 @@ var BoardMatrixItoS = map[Square]string{
 	F1: "F1",
 	G1: "G1",
 	H1: "H1",
+}
+
+// nolint:funlen,gocognit,gocyclo,cyclop // unable to reduce
+func SquaresBetween(src, dst Square) []Square {
+	sqrs := []Square{}
+
+	log.Debug().Msgf("Looking for squares between %s and %s", src.String(), BoardMatrixItoS[dst])
+
+	switch {
+	case src.File() == dst.File():
+		{
+			for _, sqr := range OrthaganolFileMoves(src) {
+				switch {
+				case src < dst:
+					if sqr > src && sqr < dst {
+						sqrs = append(sqrs, sqr)
+					}
+				case src > dst:
+					if sqr < src && sqr > dst {
+						sqrs = append(sqrs, sqr)
+					}
+				}
+			}
+		}
+
+	case src.Rank() == dst.Rank():
+		{
+			for _, sqr := range OrthaganolRankMoves(src) {
+				switch {
+				case src < dst:
+					if sqr > src && sqr < dst {
+						sqrs = append(sqrs, sqr)
+					}
+				case src > dst:
+					if sqr < src && sqr > dst {
+						sqrs = append(sqrs, sqr)
+					}
+				}
+			}
+		}
+	default:
+		var a1h8 []Square
+
+		for _, sqr := range DiagonalMovesA1H8(src) {
+			log.Debug().Msgf("Checking if %s is between %s and %s", sqr.String(), BoardMatrixItoS[src], BoardMatrixItoS[dst])
+
+			switch {
+			case sqr == dst:
+				log.Debug().Msgf("All squares found between %s and %s: %v", src.String(), BoardMatrixItoS[dst], a1h8)
+
+				sqrs = append(sqrs, a1h8...)
+			case src < dst:
+				if sqr > src && sqr < dst {
+					a1h8 = append(a1h8, sqr)
+				}
+			case src > dst:
+				if sqr < src && sqr > dst {
+					a1h8 = append(a1h8, sqr)
+				}
+			}
+		}
+
+		var a8h1 []Square
+
+		for _, sqr := range DiagonalMovesA8H1(src) {
+			log.Debug().Msgf("Checking if %s is between %s and %s", sqr.String(), BoardMatrixItoS[src], BoardMatrixItoS[dst])
+
+			switch {
+			case sqr == dst:
+				log.Debug().Msgf("All squares found between %s and %s: %v", src.String(), BoardMatrixItoS[dst], a8h1)
+
+				sqrs = append(sqrs, a8h1...)
+			case src < dst:
+				if sqr > src && sqr < dst {
+					a8h1 = append(a8h1, sqr)
+				}
+			case src > dst:
+				if sqr < src && sqr > dst {
+					a8h1 = append(a8h1, sqr)
+				}
+			}
+		}
+	}
+
+	return sqrs
+}
+
+func SquaresAdjacent(src, dst Square) bool {
+	for _, sqr := range KingMoves(src) {
+		if dst == sqr {
+			return true
+		}
+	}
+
+	return false
 }

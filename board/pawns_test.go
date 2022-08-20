@@ -10,8 +10,7 @@ import (
 func TestPawnss(t *testing.T) {
 	Convey("Given a pawns struct", t, func() {
 		pawns := board.Pawns{}
-		Convey("It should have a Positions field", func() {
-			So(pawns.Positions, ShouldHaveSameTypeAs, &board.BitBoard{})
+		Convey("It should have a Colour field", func() {
 			var testSide board.Side
 			So(pawns.Colour, ShouldHaveSameTypeAs, testSide)
 		})
@@ -42,6 +41,9 @@ func TestPawnss(t *testing.T) {
 				So(bPawns.ValidMove(board.E7, board.E5), ShouldBeTrue)
 				So(bPawns.ValidMove(board.E7, board.F6), ShouldBeTrue)
 				So(bPawns.ValidMove(board.E7, board.D6), ShouldBeTrue)
+			})
+			Convey("By returning a pointer to it's internal BitBoard", func() {
+				So(pawns.Positions(), ShouldHaveSameTypeAs, &board.BitBoard{})
 			})
 			So(pawns, ShouldImplement, (*board.Piece)(nil))
 		})
